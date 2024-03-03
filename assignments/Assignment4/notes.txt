@@ -22,3 +22,9 @@ quaternion(0.09724, -0.98861, -0.07887, -0.08349)
 Robot IP is 192.168.0.200
 
 
+
+AB - April
+
+CF - Jenny
+
+GJ - Candace
