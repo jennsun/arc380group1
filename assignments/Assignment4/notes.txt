@@ -1,0 +1,24 @@
+
+mean: 1.8mm 
+(recommended to be less than 1mm)
+
+boundary of task space to the robot (base): positions of each corner
+1: (bottom right)
+coordinates(204.03, 473.65, 31.88) 
+quaternion(0.02451, -0.99943, 0.02302, 0.00350)
+
+2: (bottom left)
+coordinates(422.02, 474.82, 32.95)
+quaternion(0.09725, -0.98862, -0.07880, -0.08347)
+
+3: (top left)
+coordinates(424.52, 194.86, 29.45)
+quaternion(0.09736, -0.98861, -0.07890, -0.08337)
+
+4: (top right)
+coordinates(207.21, 190.83, 28.80)
+quaternion(0.09724, -0.98861, -0.07887, -0.08349)
+
+Robot IP is 192.168.0.200
+
+
