@@ -79,6 +79,73 @@ def transform_task_to_world_frame(ee_frame_t: cg.Frame, task_frame: cg.Frame) ->
 
 # ========================================================================================
 
+def move_to_t_point (x: float, y: float, z: float):
+    """
+    Move end effector to a point in the task frame. 
+    """
+    # Convert task frame position to world frame position
+    ee_frame_w = abb_rrc.send_and_wait(rrc.GetFrame())
+    ee_frame_t = cg.Frame([x, y, z], ee_frame_w.xaxis, ee_frame_w.yaxis) # where we want to move the EE to
+    ee_frame_w = transform_task_to_world_frame(ee_frame_t, task_frame) 
+
+    # Move the robot to the new position
+    done = abb_rrc.send_and_wait(rrc.MoveToFrame(ee_frame_w, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
+    print("moved to new position: ", x, y, z)
+
+def draw_dashed_line (start: cg.Point, end: cg.Point, dash_gap_ratio: float):
+    """
+    2g. Draw a dashed line given a start point, end point, and dash-gap ratio.
+    """
+    z = start.z
+    points = []
+
+    # define x and y coords of dashes
+    x_vals = np.linspace(start.x, end.x, num = np.abs(start.x - end.x) // 5)
+    y_vals = np.linspace(start.y, end.y, num=len(x_vals))
+
+    # add dash and gap points to points array
+    points.append([x_vals[0], y_vals[0]])
+    for i in range(1, len(x_vals)):
+        intermmediate_point = [(x_vals[i] - x_vals[i-1]) * dash_gap_ratio + x_vals[i-1], 
+                               (y_vals[i] - y_vals[i-1]) * dash_gap_ratio + y_vals[i-1]]
+        points.append(intermmediate_point)
+        points.append([x_vals[i], y_vals[i]])
+
+    # draw dashed line
+    for i in range(len(points) - 1):
+        if i % 2 == 0: # draw a dash between this point and next point
+            move_to_t_point(points[i][0], points[i][1], z)
+            move_to_t_point(points[i+1][0], points[i+1][1], z)
+        else: # draw a gap between this point and next point
+            move_to_t_point(points[i][0], points[i][1], z - 3) # TODO: check direction of positive z-axis
+            move_to_t_point(points[i+1][0], points[i+1][1], z - 3)
+    
+def draw_hatch_pattern(corner1: cg.Point, corner2: cg.Point):
+    """
+    2j. Draw a hatch pattern given a rectangular boundary. 
+
+    corner1: top left corner of rectangle. 
+    corner2: bottom right corner of rectangle.
+    """
+    # define coordinates of hatch lines
+    z = corner1.z
+    x_vals = np.linspace(corner1.x, corner2.x, 10)
+    y_vals = np.linspace(corner1.y, corner2.y, 10)
+
+    lines = []
+    for i in range(len(x_vals)):
+        lines.append([[x_vals[i], y_vals[0]], [x_vals[i], y_vals[-1]]])
+    for i in range(len(y_vals)):
+        lines.append([[x_vals[0], y_vals[i]], [x_vals[-1], y_vals[i]]])
+    
+    # draw lines
+    for line in lines:
+        point1, point2 = line
+        move_to_t_point(point1[0], point1[1], z - 3)
+        move_to_t_point(point1[0], point1[1], z)
+        move_to_t_point(point2[0], point2[1], z)
+        move_to_t_point(point2[0], point2[1], z - 3)
+
 
 if __name__ == '__main__':
 
