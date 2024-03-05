@@ -284,7 +284,7 @@ if __name__ == '__main__':
 
     # Create ABB Client
     abb_rrc = rrc.AbbClient(ros, '/rob1-rw6')
-    print('Connected.')
+    print('Connected to ROS.')
 
     # ================================== YOUR CODE HERE ==================================
 
@@ -294,7 +294,7 @@ if __name__ == '__main__':
 
 
     # Set speed [mm/s]
-    print("setting speed")
+    # print("setting speed")
     speed = 30 # start with slower speed at first
     print("speed set to", speed)
 
@@ -310,22 +310,25 @@ if __name__ == '__main__':
     # Parts 1.e. and 2
     # move the robot to (0, 0, 0) in the task space
     # Define the task frame
+    # top left, bottom left, top right
     task_frame = cg.Frame.from_points([427.31, 199.69, 29.42], [421.47, 478.59, 32.42], [211.37, 195.40, 27.55])
     print("task_frame is", task_frame)
 
-    # Read current frame positions
-    ee_frame_w = abb_rrc.send_and_wait(rrc.GetFrame())
-    print(f'Frame = {ee_frame_w}')
-    
-    # Create a new frame at position (0, 0, 0)
-    ee_frame_t = cg.Frame([100.0, 50.0, 5.0], ee_frame_w.xaxis, ee_frame_w.yaxis) # where we want to move the EE to
-    print("ee_frame_t is", ee_frame_t)
-    ee_frame_w = transform_task_to_world_frame(ee_frame_t, task_frame) 
-    print("ee_frame_w is", ee_frame_w)
+    move_to_t_point(abb_rrc, 50.0, 100.0, 3.0)
 
-    # Move the robot to the new position
-    done = abb_rrc.send_and_wait(rrc.MoveToFrame(ee_frame_w, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
-    print("moved to new position.")
+    # # Read current frame positions
+    # ee_frame_w = abb_rrc.send_and_wait(rrc.GetFrame())
+    # print(f'Frame = {ee_frame_w}')
+    
+    # # Create a new frame at position (0, 0, 0)
+    # ee_frame_t = cg.Frame([100.0, 50.0, 5.0], ee_frame_w.xaxis, ee_frame_w.yaxis) # where we want to move the EE to
+    # print("ee_frame_t is", ee_frame_t)
+    # ee_frame_w = transform_task_to_world_frame(ee_frame_t, task_frame) 
+    # print("ee_frame_w is", ee_frame_w)
+
+    # # Move the robot to the new position
+    # done = abb_rrc.send_and_wait(rrc.MoveToFrame(ee_frame_w, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
+    # print("moved to new position.")
 
     
     """
