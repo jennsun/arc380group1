@@ -78,7 +78,6 @@ def transform_task_to_world_frame(ee_frame_t: cg.Frame, task_frame: cg.Frame) ->
 # Part 2
 
 # ========================================================================================
-
 def move_to_t_point (x: float, y: float, z: float):
     """
     Move end effector to a point in the task frame. 
@@ -92,6 +91,47 @@ def move_to_t_point (x: float, y: float, z: float):
     done = abb_rrc.send_and_wait(rrc.MoveToFrame(ee_frame_w, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
     print("moved to new position: ", x, y, z)
 
+    """
+    2a. Draw a rectangle given its dimensions, position, and rotation.
+    """
+def draw_rectangle (width, height, position, rotation):
+    # Create a frame for the rectangle
+    frame = Frame(position, (1, 0, 0), (0, 1, 0))
+
+    # Rotate the frame around its z-axis
+    frame.rotate(compas.geometry.Vector(0, 0, 1), rotation)
+
+    # Create a box representing the rectangle
+    rectangle = Box(frame, width, height, 0.1)
+
+    # Get the vertices of the rectangle
+    vertices = rectangle.vertices
+
+    # Print the vertices coordinates
+    for vertex in vertices:
+        print(vertex)
+
+    """
+    2b. Draw any regular polygon given a number of sides and position.
+    """
+def draw_regular_polygon (num_sides, position):
+    center = np.array(position) #convert the position to a numpy array
+    radius = 1.0 #set the radius of the polygon 
+    
+    #calculate the vertices of the polygon
+    vertices = []
+    for i in range(num_sides):
+        angle = i * (2 * np.pi / num_sides)
+        x = center[0] + radius * np.cos(angle)
+        y = center[1] + radius * np.sin(angle)
+        vertices.append([x, y])
+
+    polygon = cg.Polygon(vertices)
+
+    # Print the vertices coordinates
+    for vertex in vertices:
+        print(vertex)
+        
 def draw_dashed_line (start: cg.Point, end: cg.Point, dash_gap_ratio: float):
     """
     2g. Draw a dashed line given a start point, end point, and dash-gap ratio.
