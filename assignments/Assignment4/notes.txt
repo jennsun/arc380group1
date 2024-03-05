@@ -1,8 +1,12 @@
 
+day 1
 mean: 1.8mm 
+day 2
+error: 1.6mm 
 (recommended to be less than 1mm)
 
 boundary of task space to the robot (base): positions of each corner
+day 1
 1: (bottom right)
 coordinates(204.03, 473.65, 31.88) 
 quaternion(0.02451, -0.99943, 0.02302, 0.00350)
@@ -19,6 +23,24 @@ quaternion(0.09736, -0.98861, -0.07890, -0.08337)
 coordinates(207.21, 190.83, 28.80)
 quaternion(0.09724, -0.98861, -0.07887, -0.08349)
 
+---
+Day 2
+1: (top left)
+coordinates(427.31, 199.69, 29.42)
+(0.16705, -0.44156, 0.87699, -0.08952)
+
+2: (top right)
+coordinates(211.37, 195.40, 27.55)
+quaternion(0.16699, -0.44153, 0.87702, -0.08945)
+
+3: (bottom right)
+coordinates(206.00, 475.41, 30.41)
+quaternion(0.16697, -0.44151, 0.87703, -0.08946)
+
+4: (bottom left)
+coordinates(421.47, 478.59, 32.42)
+quaternion(0.16688, -0.44152, 0.87704, -0.08949)
+
 Robot IP is 192.168.0.200
 
 
@@ -28,3 +50,15 @@ AB - April
 CF - Jenny
 
 GJ - Candace
+
+
+task_frame is Frame(Point(427.310, 199.690, 29.420), Vector(0.731, 0.676, 0.095), Vector(-0.672, 0.737, -0.071))
+Frame = Frame(Point(305.549, 2.020, 346.953), Vector(-1.000, -0.000, -0.000), Vector(-0.000, 1.000, 0.000))
+ee_frame_t is Frame(Point(50.000, 100.000, 5.000), Vector(-1.000, -0.000, -0.000), Vector(-0.000, 1.000, 0.000))
+T is [[    0.7310,   -0.6721,   -0.1180,  427.3100],
+ [    0.6757,    0.7370,   -0.0124,  199.6900],
+ [    0.0953,   -0.0706,    0.9929,   29.4200],
+ [    0.0000,    0.0000,    0.0000,    1.0000]]
+
+ee_frame_w is Frame(Point(396.054, 307.119, 32.085), Vector(-0.731, -0.676, -0.095), Vector(-0.672, 0.737, -0.071))
+ee_frame_w is Frame(Point(396.054, 307.119, 32.085), Vector(-0.731, -0.676, -0.095), Vector(-0.672, 0.737, -0.071))

@@ -310,7 +310,7 @@ if __name__ == '__main__':
     # Parts 1.e. and 2
     # move the robot to (0, 0, 0) in the task space
     # Define the task frame
-    task_frame = cg.Frame([424.52, 194.86, 29.45], [207.21, 190.83, 28.80], [204.03, 473.65, 31.88])
+    task_frame = cg.Frame.from_points([427.31, 199.69, 29.42], [421.47, 478.59, 32.42], [211.37, 195.40, 27.55])
     print("task_frame is", task_frame)
 
     # Read current frame positions
@@ -318,7 +318,7 @@ if __name__ == '__main__':
     print(f'Frame = {ee_frame_w}')
     
     # Create a new frame at position (0, 0, 0)
-    ee_frame_t = cg.Frame([0.0, 0.0, 0.0], ee_frame_w.xaxis, ee_frame_w.yaxis) # where we want to move the EE to
+    ee_frame_t = cg.Frame([100.0, 50.0, 5.0], ee_frame_w.xaxis, ee_frame_w.yaxis) # where we want to move the EE to
     print("ee_frame_t is", ee_frame_t)
     ee_frame_w = transform_task_to_world_frame(ee_frame_t, task_frame) 
     print("ee_frame_w is", ee_frame_w)
