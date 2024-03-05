@@ -77,8 +77,13 @@ def transform_task_to_world_frame(ee_frame_t: cg.Frame, task_frame: cg.Frame) ->
 
 # Part 2
 
+# AB - April
+# CF - Jenny
+# GJ - Candace
+
 # ========================================================================================
-def move_to_t_point (x: float, y: float, z: float):
+
+def move_to_t_point(abb_rrc, x: float, y: float, z: float):
     """
     Move end effector to a point in the task frame. 
     """
@@ -91,10 +96,10 @@ def move_to_t_point (x: float, y: float, z: float):
     done = abb_rrc.send_and_wait(rrc.MoveToFrame(ee_frame_w, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
     print("moved to new position: ", x, y, z)
 
-    """
-    2a. Draw a rectangle given its dimensions, position, and rotation.
-    """
-def draw_rectangle (width, height, position, rotation):
+"""
+2a. Draw a rectangle given its dimensions, position, and rotation.
+"""
+def draw_rectangle(width, height, position, rotation):
     # Create a frame for the rectangle
     frame = Frame(position, (1, 0, 0), (0, 1, 0))
 
@@ -111,9 +116,9 @@ def draw_rectangle (width, height, position, rotation):
     for vertex in vertices:
         print(vertex)
 
-    """
-    2b. Draw any regular polygon given a number of sides and position.
-    """
+"""
+2b. Draw any regular polygon given a number of sides and position.
+"""
 def draw_regular_polygon (num_sides, position):
     center = np.array(position) #convert the position to a numpy array
     radius = 1.0 #set the radius of the polygon 
@@ -132,6 +137,89 @@ def draw_regular_polygon (num_sides, position):
     for vertex in vertices:
         print(vertex)
         
+
+# C: Using the robot compas_rrc and compas.geometry, draw a circle of any size given its radius and center point
+def draw_circle(abb_rrc, center: cg.Point, radius, n_points=72):
+    """
+    Using the robot compas_rrc and compas.geometry, draw a circle of any size given its radius and center point
+
+    Parameters:
+    - abb_rrc: The ABB robot client instance from compas_rrc.
+    - center: The center point of the circle as a list [x, y, z].
+    - radius: The radius of the circle.
+    - n_points: The number of points on circle. More points = smoother circle.
+    """
+    # Circle can be parameterized as (x, y) = (center_x + r * cos(theta), center_y + r * sin(theta))
+    # where theta is the angle from 0 to 2 * pi and r is radius of circle
+
+    # Retrieve center point coordinates
+    center_x, center_y, center_z = center
+
+    # Generate points around the circle
+    angles = np.linspace(0, 2 * np.pi, n_points, endpoint=False)
+    points = []
+    for angle in angles:
+        x = center_x + radius * np.cos(angle)
+        y = center_y + radius * np.sin(angle)
+        z = center_z
+        points.append([x, y, z])
+    
+    # Move to the first point without drawing
+    first_point = points[0]
+    move_to_t_point(abb_rrc, first_point[0], first_point[1], first_point[2] - 5)  # Move 5mm above the first point
+
+    # Lower the tool to the first point
+    move_to_t_point(abb_rrc, first_point[0], first_point[1], first_point[2])
+
+    # Draw the rest of the circle
+    for point in points:
+        move_to_t_point(abb_rrc, point[0], point[1], point[2])
+
+    # Complete the circle by moving to the first point again
+    move_to_t_point(abb_rrc, first_point[0], first_point[1], first_point[2])
+
+    # Raise the tool after completing the circle
+    move_to_t_point(abb_rrc, first_point[0], first_point[1], first_point[2] - 5)
+
+# F: Draw a line with changing stroke thickness (eg from thin to thick)
+def draw_changing_stroke_line(abb_rrc, start: cg.Point, end: cg.Point, number_of_points=10):
+    """
+    Draw a line with changing stroke thickness (eg from thin to thick)
+
+    Parameters:
+    - abb_rrc: The ABB robot client instance from compas_rrc.
+    - start: The start point of the line
+    - end: The end point of the line
+    - n_points: The number of points to interpolate along the line. More points = smoother transition.
+    """
+
+    # Extract x, y, z components from cg.Point objects
+    start_x, start_y, start_z = start.x, start.y, start.z
+    end_x, end_y, end_z = end.x, end.y, end.z
+
+    # Calculate a list of 5 points along the line
+    points = []
+    for i in range(number_of_points):
+        x = start_x + (end_x - start_x) * i / (number_of_points-1)
+        y = start_y + (end_y - start_y) * i / (number_of_points-1)
+        z = start_z + (end_z - start_z) * i / (number_of_points-1)
+        points.append([x, y, z])
+
+    # Iterate over points to draw the line with changing stroke thickness
+    for i in range(len(points) - 1):
+        # z adjustment is equal to -3 plus a random number between -1 and 1
+        z_adjustment = -3 + np.random.uniform(-1, 1)
+        
+        # Move to the starting point of the segment above the surface
+        move_to_t_point(abb_rrc, points[i][0], points[i][1], points[i][2] + z_adjustment)
+        
+        # Lower to the actual start point
+        move_to_t_point(abb_rrc, points[i][0], points[i][1], points[i][2])
+        
+        # Draw to the next point
+        move_to_t_point(abb_rrc, points[i+1][0], points[i+1][1], points[i+1][2])
+
+# G: Draw a dashed line given a start point, end point, and dash/gap ratio
 def draw_dashed_line (start: cg.Point, end: cg.Point, dash_gap_ratio: float):
     """
     2g. Draw a dashed line given a start point, end point, and dash-gap ratio.
@@ -154,12 +242,13 @@ def draw_dashed_line (start: cg.Point, end: cg.Point, dash_gap_ratio: float):
     # draw dashed line
     for i in range(len(points) - 1):
         if i % 2 == 0: # draw a dash between this point and next point
-            move_to_t_point(points[i][0], points[i][1], z)
-            move_to_t_point(points[i+1][0], points[i+1][1], z)
+            move_to_t_point(abb_rrc, points[i][0], points[i][1], z)
+            move_to_t_point(abb_rrc, points[i+1][0], points[i+1][1], z)
         else: # draw a gap between this point and next point
-            move_to_t_point(points[i][0], points[i][1], z - 3) # TODO: check direction of positive z-axis
-            move_to_t_point(points[i+1][0], points[i+1][1], z - 3)
+            move_to_t_point(abb_rrc, points[i][0], points[i][1], z - 3) # TODO: check direction of positive z-axis
+            move_to_t_point(abb_rrc, points[i+1][0], points[i+1][1], z - 3)
     
+# J: Draw a hatch pattern given a rectangular boundary
 def draw_hatch_pattern(corner1: cg.Point, corner2: cg.Point):
     """
     2j. Draw a hatch pattern given a rectangular boundary. 
@@ -181,10 +270,10 @@ def draw_hatch_pattern(corner1: cg.Point, corner2: cg.Point):
     # draw lines
     for line in lines:
         point1, point2 = line
-        move_to_t_point(point1[0], point1[1], z - 3)
-        move_to_t_point(point1[0], point1[1], z)
-        move_to_t_point(point2[0], point2[1], z)
-        move_to_t_point(point2[0], point2[1], z - 3)
+        move_to_t_point(abb_rrc, point1[0], point1[1], z - 3)
+        move_to_t_point(abb_rrc, point1[0], point1[1], z)
+        move_to_t_point(abb_rrc, point2[0], point2[1], z)
+        move_to_t_point(abb_rrc, point2[0], point2[1], z - 3)
 
 
 if __name__ == '__main__':
