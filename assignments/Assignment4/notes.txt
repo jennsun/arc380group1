@@ -4,6 +4,9 @@ mean: 1.8mm
 day 2
 error: 1.6mm 
 (recommended to be less than 1mm)
+day 3
+error: 1.5mm
+
 
 boundary of task space to the robot (base): positions of each corner
 day 1
@@ -40,6 +43,19 @@ quaternion(0.16697, -0.44151, 0.87703, -0.08946)
 4: (bottom left)
 coordinates(421.47, 478.59, 32.42)
 quaternion(0.16688, -0.44152, 0.87704, -0.08949)
+
+---
+Day 3
+1: top left:
+(429.5, 192.83, 29.70)
+
+2: top right:
+(212.74, 190.16, 27.49)
+
+3: bottom left
+(429.91, 471.88, 29.67)
+
+---
 
 Robot IP is 192.168.0.200
 

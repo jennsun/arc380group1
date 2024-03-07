@@ -106,40 +106,33 @@ def draw_rectangle(width, height, center: cg.Point, rotation_degrees):
     # Define half dimensions for calculations
     half_width = width / 2.0
     half_height = height / 2.0
+
+    center_x, center_y, center_z = center
     
     # Calculate corner points in local rectangle frame
-    corners_local = [
-        cg.Point(-half_width, -half_height, 0),
-        cg.Point(half_width, -half_height, 0),
-        cg.Point(half_width, half_height, 0),
-        cg.Point(-half_width, half_height, 0)
+    corners = [
+        (center_x + half_width, center_y + half_height, center_z),
+        (center_x - half_width, center_y - half_height, center_z),
+        (center_x + half_width, center_y - half_height, center_z),
+        (center_x - half_width, center_y + half_height, center_z),
     ]
     
-    # Rotate and translate corners to global frame
-    corners_global = []
-    for corner in corners_local:
-        # Rotate corner
-        rotated_corner = corner.transformed(cg.Rotation.from_axis_and_angle([0, 0, 1], rotation_radians))
-        # Translate corner to global position
-        global_corner = rotated_corner + center
-        corners_global.append(global_corner)
-    
     # Move to the first corner, a bit above
-    move_to_t_point(abb_rrc, corners_global[0].x, corners_global[0].y, corners_global[0].z + 3)
+    move_to_t_point(abb_rrc, corners[0][0], corners[0][1], corners[0][2] + 3)
     
     # Lower to first corner on canvas
-    move_to_t_point(abb_rrc, corners_global[0].x, corners_global[0].y, corners_global[0].z)
-    
+    move_to_t_point(abb_rrc, corners[0][0], corners[0][1], corners[0][2])
+
     # Draw the rectangle by moving to each successive corner in sequence
-    for corner in corners_global[1:]:
-        move_to_t_point(abb_rrc, corner.x, corner.y, corner.z)
+    for corner in corners[1:]:
+        move_to_t_point(abb_rrc, corner[0], corner[1], corner[2])
 
     # Return to first corner to close the rectangle
-    move_to_t_point(abb_rrc, corners_global[0].x, corners_global[0].y, corners_global[0].z)
+    move_to_t_point(abb_rrc, corners[0][0], corners[0][1], corners[0][2])
 
     # Raise the tool after completing the rectangle
     # Return to first corner to close the rectangle
-    move_to_t_point(abb_rrc, corners_global[0].x, corners_global[0].y, corners_global[0].z + 3)
+    move_to_t_point(abb_rrc, corners[0][0], corners[0][1], corners[0][2] + 3)
 
 
 """
@@ -312,6 +305,36 @@ def draw_hatch_pattern(corner1: cg.Point, corner2: cg.Point):
         move_to_t_point(abb_rrc, point2[0], point2[1], z)
         move_to_t_point(abb_rrc, point2[0], point2[1], z + 3)
 
+'''
+def draw_house():
+    # house base
+    draw_rectangle(width, height, center: cg.Point, rotation_degrees)
+
+    # door
+    draw_rectangle(width, height, center: cg.Point, rotation_degrees)
+
+    # window 1
+    draw_hatch_pattern(corner1: cg.Point, corner2: cg.Point)
+
+    # window 2
+    draw_hatch_pattern(corner1: cg.Point, corner2: cg.Point)
+
+    # roof
+    draw_regular_polygon(num_sides, center: cg.Point, radius=10)
+
+    # sun
+    draw_circle(center: cg.Point, radius, n_points=10)
+
+    # top of road
+    draw_changing_stroke_line(start: cg.Point, end: cg.Point, number_of_points=5)
+
+    # dashed middle of road
+    draw_dashed_line(start: cg.Point, end: cg.Point, dash_gap_ratio: float)
+
+    # bottom of road
+    draw_changing_stroke_line(start: cg.Point, end: cg.Point, number_of_points=5)
+'''
+
 
 if __name__ == '__main__':
 
@@ -348,7 +371,7 @@ if __name__ == '__main__':
     # move the robot to (0, 0, 0) in the task space
     # Define the task frame
     # top left, bottom left, top right
-    task_frame = cg.Frame.from_points([427.31, 199.69, 29.42], [421.47, 478.59, 32.42], [211.37, 195.40, 27.55])
+    task_frame = cg.Frame.from_points([429.5, 192.83, 29.70], [429.91, 471.88, 29.67], [212.74, 190.16, 27.49])
     print("task_frame is", task_frame)
 
     # move_to_t_point(abb_rrc, 50.0, 100.0, 0.0)
@@ -369,9 +392,15 @@ if __name__ == '__main__':
     # draw_circle(p1, 10)
 
     # Draw changing stroke line
-    p1 = cg.Point(200, 100, 0)
-    p2 = cg.Point(150, 100, 0)
-    draw_changing_stroke_line(p1, p2)
+    # p1 = cg.Point(200, 100, 0)
+    # p2 = cg.Point(150, 100, 0)
+    # draw_changing_stroke_line(p1, p2)
+
+    # Draw a rectangle
+    draw_rectangle(104, 95, cg.Point(219, 224.5, 0), 0)
+
+    # Draw a regular polygon
+    # draw_regular_polygon(5, cg.Point(109, 94.7, 0), 56.7)
 
 
     # # Read current frame positions
