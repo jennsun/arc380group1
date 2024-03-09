@@ -106,34 +106,40 @@ def draw_rectangle(width, height, center: cg.Point, rotation_degrees):
     # Define half dimensions for calculations
     half_width = width / 2.0
     half_height = height / 2.0
-
-    center_x, center_y, center_z = center
     
     # Calculate corner points in local rectangle frame
-    corners = [
-        (center_x + half_width, center_y + half_height, center_z),
-        (center_x - half_width, center_y - half_height, center_z),
-        (center_x + half_width, center_y - half_height, center_z),
-        (center_x - half_width, center_y + half_height, center_z),
+    corners_local = [
+        cg.Point(-half_width, -half_height, 0),
+        cg.Point(half_width, -half_height, 0),
+        cg.Point(half_width, half_height, 0),
+        cg.Point(-half_width, half_height, 0)
     ]
     
+    # Rotate and translate corners to global frame
+    corners_global = []
+    for corner in corners_local:
+        # Rotate corner
+        rotated_corner = corner.transformed(cg.Rotation.from_axis_and_angle([0, 0, 1], rotation_radians))
+        # Translate corner to global position
+        global_corner = rotated_corner + center
+        corners_global.append(global_corner)
+    
     # Move to the first corner, a bit above
-    move_to_t_point(abb_rrc, corners[0][0], corners[0][1], corners[0][2] + 3)
+    move_to_t_point(abb_rrc, corners_global[0].x, corners_global[0].y, corners_global[0].z + 3)
     
     # Lower to first corner on canvas
-    move_to_t_point(abb_rrc, corners[0][0], corners[0][1], corners[0][2])
-
+    move_to_t_point(abb_rrc, corners_global[0].x, corners_global[0].y, corners_global[0].z)
+    
     # Draw the rectangle by moving to each successive corner in sequence
-    for corner in corners[1:]:
-        move_to_t_point(abb_rrc, corner[0], corner[1], corner[2])
+    for corner in corners_global[1:]:
+        move_to_t_point(abb_rrc, corner.x, corner.y, corner.z)
 
     # Return to first corner to close the rectangle
-    move_to_t_point(abb_rrc, corners[0][0], corners[0][1], corners[0][2])
+    move_to_t_point(abb_rrc, corners_global[0].x, corners_global[0].y, corners_global[0].z)
 
     # Raise the tool after completing the rectangle
     # Return to first corner to close the rectangle
-    move_to_t_point(abb_rrc, corners[0][0], corners[0][1], corners[0][2] + 3)
-
+    move_to_t_point(abb_rrc, corners_global[0].x, corners_global[0].y, corners_global[0].z + 3)
 
 """
 2b. Draw any regular polygon given a number of sides and position.
@@ -238,8 +244,12 @@ def draw_changing_stroke_line(start: cg.Point, end: cg.Point, number_of_points=5
 
     z_adjustments = [-2, 0, -1, -2, 0]
 
+    # Move to the first point, above canvas
+    move_to_t_point(abb_rrc, points[i][0], points[i][1], points[i][2] + 3)
+
     # Iterate over points to draw the line with changing stroke thickness
-    for i in range(len(points) - 1):
+    last = len(points) - 1
+    for i in range(last):
         # z adjustment is equal to -3 plus a random number between -1 and 1
         z_adjustment = z_adjustments[i]
         
@@ -248,6 +258,9 @@ def draw_changing_stroke_line(start: cg.Point, end: cg.Point, number_of_points=5
         
         # Draw to the next point
         move_to_t_point(abb_rrc, points[i+1][0], points[i+1][1], points[i+1][2] + z_adjustment)
+
+    # move pen up from last point
+    move_to_t_point(abb_rrc, points[last][0], points[last][1], points[last][2] + 3)
 
 # G: Draw a dashed line given a start point, end point, and dash/gap ratio
 def draw_dashed_line(start: cg.Point, end: cg.Point, dash_gap_ratio: float):
@@ -335,6 +348,55 @@ def draw_house():
     draw_changing_stroke_line(start: cg.Point, end: cg.Point, number_of_points=5)
 '''
 
+def draw_house():
+    # house base
+    draw_rectangle(100, 120, cg.Point(110, 170, 0), 0)
+
+    # door
+    draw_rectangle(25, 30, cg.Point(110, 200, 0), 0)
+
+    # window 1
+    draw_hatch_pattern(cg.Point(69, 143, 0), cg.Point(97, 171, 0))
+
+    # window 2
+    draw_hatch_pattern(cg.Point(120, 143, 0), cg.Point(148, 171, 0))
+
+    # plant
+    draw_regular_polygon(5, cg.Point(185, 200, 0), radius=15)
+
+    # two lines representing roof
+    draw_changing_stroke_line(cg.Point(60, 110, 0), cg.Point(110, 120, 0), number_of_points=2)
+
+    draw_changing_stroke_line(cg.Point(110, 120, 0), cg.Point(160, 110, 0), number_of_points=2)
+
+    # sun
+    draw_circle(cg.Point(35, 35, 0), 15, n_points=20)
+
+    # top of road
+    draw_changing_stroke_line(cg.Point(5, 220, 0), cg.Point(215, 220, 0), number_of_points=5)
+
+    # dashed middle of road
+    draw_dashed_line(cg.Point(5, 230, 0), cg.Point(215, 230, 0), dash_gap_ratio=0.3)
+
+    # bottom of road
+    draw_changing_stroke_line(cg.Point(5, 240, 0), cg.Point(215, 240, 0), number_of_points=5)
+
+    # # draw initials
+    # lines = []
+    # lines.append([cg.Point(152.5, 35.5, 0), cg.Point(160.5, 20, 0), cg.Point(168.5, 35.5, 0)])
+    # lines.append([cg.Point(156.5, 27.75, 0), cg.Point(164.5, 27.75, 0)])
+    # lines.append([cg.Point(181, 20, 0), cg.Point(170.5, 20, 0), cg.Point(170.5, 34.5, 0), cg.Point(181, 34.5, 0)])
+    # lines.append([cg.Point(190.5, 19, 0), cg.Point(190.5, 35, 0), cg.Point(183, 35, 0)])
+
+    # for line in lines:
+    #     # move to first point
+    #     move_to_t_point(abb_rrc, line[0][0], line[0][1], line[0][2] + 3)
+    #     # draw lines
+    #     for point in line:
+    #         move_to_t_point(abb_rrc, point[0], point[1], point[2])
+    #     # move to last point
+    #     move_to_t_point(abb_rrc, line[-1][0], line[-1][1], line[-1][2] + 3)
+
 
 if __name__ == '__main__':
 
@@ -355,7 +417,7 @@ if __name__ == '__main__':
 
     # Set speed [mm/s]
     # print("setting speed")
-    speed = 30 # start with slower speed at first
+    speed = 60 # start with slower speed at first
     print("speed set to", speed)
 
     # Go to home position (linear joint move)
@@ -374,7 +436,7 @@ if __name__ == '__main__':
     task_frame = cg.Frame.from_points([429.5, 192.83, 29.70], [429.91, 471.88, 29.67], [212.74, 190.16, 27.49])
     print("task_frame is", task_frame)
 
-    # move_to_t_point(abb_rrc, 50.0, 100.0, 0.0)
+    # move_to_t_point(abb_rrc, 280.0, 220.0, 0.0)
     # move_to_t_point(abb_rrc, 100.0, 100.0, 0.0)
 
     # Hatch pattern
@@ -397,11 +459,13 @@ if __name__ == '__main__':
     # draw_changing_stroke_line(p1, p2)
 
     # Draw a rectangle
-    draw_rectangle(104, 95, cg.Point(219, 224.5, 0), 0)
+    # draw_rectangle(44, 50, cg.Point(170, 110, 0), 45)
 
     # Draw a regular polygon
-    # draw_regular_polygon(5, cg.Point(109, 94.7, 0), 56.7)
+    # draw_regular_polygon(5, cg.Point(100, 100.7, 0), 50)
 
+    # draw house (Part 3)
+    draw_house()
 
     # # Read current frame positions
     # ee_frame_w = abb_rrc.send_and_wait(rrc.GetFrame())
