@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 from cv2 import aruco
+from cv2 import RotatedRect
  
  
 """
@@ -181,15 +182,18 @@ def extract_features(img_path: str) -> dict:
  
 # 2d
 def annotate_features(path, objects):
+    # define colors
     colors = {
         "orange": (0, 37, 149),
         "turquoise": (123, 129, 17),
         "purple": (16, 11, 14)
     }
-    font = cv2.FONT_HERSHEY_SIMPLEX 
-    img = cv2.imread(path)
+    font = cv2.FONT_HERSHEY_SIMPLEX # for text
+    img = cv2.imread(path) # read in image
 
+    # annotate each object
     for object in objects:
+        # extract features
         color = object["color"]
         shape = object["shape"]
         area = object["size"]
@@ -198,10 +202,18 @@ def annotate_features(path, objects):
 
         if shape == "circle":
             radius = int((area / np.pi)**0.5)
-            img = cv2.circle(img, center=(x, y), radius=radius, color=colors[color], thickness=5)
-            img = cv2.putText(img, text=color + " " + shape, org=(x, y), fontScale=1, fontFace=font, color=colors[color], thickness=1)
-        else:
-            pass
+            img = cv2.circle(img, center=(x, y), radius=radius, color=(255, 0, 0), thickness=5)
+            img = cv2.putText(img, text=f"{color} {shape}", org=(x-25, y + radius + 25), 
+                              fontScale=1, fontFace=font, color=colors[color], thickness=1)
+        else: # shape is a square
+            side_length = int(area**0.5)
+            square = ((x, y), (side_length, side_length), orientation)
+            square = cv2.boxPoints(square)
+            square = np.intp(square)
+            cv2.drawContours(img, [square], 0, (255, 0, 0), 5)
+            img = cv2.putText(img, text=f"{color} {shape}", org=(x-25, y + int(side_length / 2) + 25), 
+                              fontScale=1, fontFace=font, color=colors[color], thickness=1)
+
     plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     plt.title("Annotated Image")
     # plt.gca().invert_yaxis()
