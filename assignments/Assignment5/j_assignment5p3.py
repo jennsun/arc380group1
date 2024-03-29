@@ -63,8 +63,7 @@ def place_object(abb_rrc, object, largest_object_position, angle):
 
     # move item on top of largest object (base of pile)'s position
     move_to_t_point(abb_rrc, x, y, z + 0.3)
-    # move gripper down
-    move_to_t_point(abb_rrc, x, y, z + 0.1)
+    
     # rotate object by angle
     # TODO: CHECK ROTATION IMPLEMENTATION
     current_frame = abb_rrc.send_and_wait(rrc.GetFrame())
@@ -75,6 +74,9 @@ def place_object(abb_rrc, object, largest_object_position, angle):
     rotated_frame = current_frame.transformed(rotation)
     # Move the robot to the rotated frame
     abb_rrc.send_and_wait(rrc.MoveToFrame(rotated_frame, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
+
+    # move gripper down
+    move_to_t_point(abb_rrc, x, y, z + 0.1)
     
     # turn gripper off
     abb_rrc.send_and_wait(rrc.SetDigital('DO00', False))
