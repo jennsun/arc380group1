@@ -62,7 +62,7 @@ def place_object(abb_rrc, object, largest_object_position, angle):
     z = largest_object_position[object["color"]][2]
 
     # move item on top of largest object (base of pile)'s position
-    move_to_t_point(abb_rrc, x, y, z + 0.3)
+    move_to_t_point(abb_rrc, x, y, z + 2)
     
     # rotate object by angle
     # TODO: CHECK ROTATION IMPLEMENTATION
@@ -76,14 +76,14 @@ def place_object(abb_rrc, object, largest_object_position, angle):
     abb_rrc.send_and_wait(rrc.MoveToFrame(rotated_frame, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
 
     # move gripper down
-    move_to_t_point(abb_rrc, x, y, z + 0.1)
+    move_to_t_point(abb_rrc, x, y, z + 0.5)
     
     # turn gripper off
     abb_rrc.send_and_wait(rrc.SetDigital('DO00', False))
     abb_rrc.send_and_wait(rrc.WaitTime(0.5))
 
     # move gripper up
-    move_to_t_point(abb_rrc, x, y, z + 0.3)
+    move_to_t_point(abb_rrc, x, y, z + 2)
 
     # update values since pile height has increased. 1/8 inch is 3.175 mm
     largest_object_position[object["color"]] = (x, y, z + 3.175)
