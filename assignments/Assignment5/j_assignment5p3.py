@@ -66,14 +66,15 @@ def place_object(abb_rrc, object, largest_object_position, angle):
     
     # rotate object by angle
     # TODO: CHECK ROTATION IMPLEMENTATION
-    current_frame = abb_rrc.send_and_wait(rrc.GetFrame())
-    # create rotation transformation around Z axis at the current location
-    angle = math.radians(angle)
-    rotation = cg.Rotation.from_axis_and_angle([0, 0, 1], angle, point=current_frame.point)
-    # Apply the rotation to the current end effector frame
-    rotated_frame = current_frame.transformed(rotation)
-    # Move the robot to the rotated frame
-    abb_rrc.send_and_wait(rrc.MoveToFrame(rotated_frame, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
+    if object["shape"] == "square":
+        current_frame = abb_rrc.send_and_wait(rrc.GetFrame())
+        # create rotation transformation around Z axis at the current location
+        angle = math.radians(angle)
+        rotation = cg.Rotation.from_axis_and_angle([0, 0, 1], angle, point=current_frame.point)
+        # Apply the rotation to the current end effector frame
+        rotated_frame = current_frame.transformed(rotation)
+        # Move the robot to the rotated frame
+        abb_rrc.send_and_wait(rrc.MoveToFrame(rotated_frame, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
 
     # move gripper down
     move_to_t_point(abb_rrc, x, y, z + 0.5)
