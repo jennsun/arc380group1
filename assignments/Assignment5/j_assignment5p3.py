@@ -45,13 +45,14 @@ def move_to_t_point(abb_rrc, x: float, y: float, z: float):
 
 def pick_object(abb_rrc, object):
     # move to object, then down on object
-    move_to_t_point(abb_rrc, object["position"]["x"], object["position"]["y"], 0.3)
-    move_to_t_point(abb_rrc, object["position"]["x"], object["position"]["y"], 0.1)
+    # one block is about 3.125 mm
+    move_to_t_point(abb_rrc, object["position"]["x"], object["position"]["y"], 5)
+    move_to_t_point(abb_rrc, object["position"]["x"], object["position"]["y"], 3.5)
     # turn gripper on
     abb_rrc.send_and_wait(rrc.SetDigital('DO00', True))
     abb_rrc.send_and_wait(rrc.WaitTime(0.5))
     # move object upwards
-    move_to_t_point(abb_rrc, object["position"]["x"], object["position"]["y"], 0.3)
+    move_to_t_point(abb_rrc, object["position"]["x"], object["position"]["y"], 5)
 
 
 def place_object(abb_rrc, object, largest_object_position, angle):
