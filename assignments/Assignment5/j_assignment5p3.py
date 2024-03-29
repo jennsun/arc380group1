@@ -140,6 +140,9 @@ if __name__ == '__main__':
     done = abb_rrc.send_and_wait(rrc.MoveToJoints(home, [], speed, rrc.Zone.FINE))
     print("moved to home position.")
 
+    # Define the task space points: top left, top right, bottom left
+    task_frame = cg.Frame.from_points([419.36, 178.04, 28.35], [419.14, 458.02, 30.40], [204.17, 178.02, 27.17])
+
     # Define the base pose of the first pile
     objects = get_objects() # CANDACE'S CODE
     sort_objects_into_piles(abb_rrc, objects)
