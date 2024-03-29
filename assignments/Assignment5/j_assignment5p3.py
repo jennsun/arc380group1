@@ -154,7 +154,12 @@ if __name__ == '__main__':
     print("moved to home position.")
 
     # Define the task space points: top left, top right, bottom left
-    task_frame = cg.Frame.from_points([419.36, 178.04, 28.35], [419.14, 458.02, 30.40], [204.17, 178.02, 27.17])
+    task_frame = cg.Frame.from_points([254.71, 192.44, 17.51], [-229.4, 192.41, 15.51], [253.71, 491.79, 19.13])
+    # top left: [254.71, 192.44, 17.51]
+    # top right: [-229.4, 192.41, 15.51]
+    # bottom left: [253.71, 491.79, 19.13] 
+    # height: 30cm is 11.81 inches (12)
+    # width: 48cm is 18.89 inches (19)
 
     # Define the base pose of the first pile
     path = "image.png"
