@@ -1,5 +1,6 @@
 import compas_rrc as rrc
 import compas.geometry as cg
+import math
 from ARC380_Assignment5 import get_img, extract_features
 
 # Assuming there is a robot object already initialized
@@ -64,7 +65,15 @@ def place_object(abb_rrc, object, largest_object_position, angle):
     # move gripper down
     move_to_t_point(abb_rrc, x, y, z + 0.1)
     # rotate object by angle
-    # TODO: IMPLEMENT THIS
+    # TODO: CHECK ROTATION IMPLEMENTATION
+    current_frame = abb_rrc.send_and_wait(rrc.GetFrame())
+    # create rotation transformation around Z axis at the current location
+    angle = math.radians(angle)
+    rotation = cg.Rotation.from_axis_and_angle([0, 0, 1], angle, point=current_frame.point)
+    # Apply the rotation to the current end effector frame
+    rotated_frame = current_frame.transformed(rotation)
+    # Move the robot to the rotated frame
+    abb_rrc.send_and_wait(rrc.MoveToFrame(rotated_frame, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
     
     # turn gripper off
     abb_rrc.send_and_wait(rrc.SetDigital('DO00', False))
