@@ -42,16 +42,23 @@ def transform_img(path):
     """
     img = cv2.imread(path)
     # aruco imports
-    dictionary = aruco.getPrePredefinedDictionary(aruco.DICT_6X6_250)
+    dictionary = aruco.getPredefinedDictionary(aruco.DICT_6X6_250)
     detector_params = aruco.DetectorParameters()
     detector = aruco.ArucoDetector(dictionary, detector_params)
 
     # detect aruco markers
     corners, ids, rejected = detector.detectMarkers(img)
+    # markers_img = img.copy()
+    # aruco.drawDetectedMarkers(markers_img, corners, ids)
+
+    # plt.figure(figsize=(16,9))
+    # plt.imshow(markers_img)
+    # plt.title('Detected ArUco markers')
+    # plt.show()
 
     # parameters of final image
-    width = 10
-    height = 7.5
+    width = 19
+    height = 12
     ppi = 96
 
     # sort markers and define source and destination points
@@ -59,14 +66,18 @@ def transform_img(path):
     corners = np.array([corners[i] for i in np.argsort(ids)])
     corners = np.squeeze(corners)
     ids = np.sort(ids)
-    src_pts = np.array([corners[0][0], corners[1][1], corners[2][2], corners[3][3]], dtype='float32')
+    src_pts = np.array([corners[0][1], corners[1][2], corners[2][3], corners[3][0]], dtype='float32')
+
+    print(src_pts)
     dst_pts = np.array([[0, 0], [0, height*ppi], [width*ppi, height*ppi], [width*ppi, 0]], dtype='float32')
 
     # do the transform and return the corrected image
     M = cv2.getPerspectiveTransform(src_pts, dst_pts)
-    corrected_img = cv2.warpPerspective(img, M, (img_rgb.shape[1], img_rgb.shape[0]))
+    corrected_img = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))
     corrected_img = corrected_img[:int(height*ppi), :int(width*ppi)]
     cv2.imwrite(path, corrected_img)
+    plt.imshow(corrected_img)
+    plt.show()
     return corrected_img
 
  
@@ -90,7 +101,7 @@ def extract_features(img_path: str) -> dict:
     img_data = np.float32(img_data)
  
     # Define the number of clusters
-    k = 7 # 3 or 4 + white background + black aruco markers
+    k = 8 # 3 or 4 + white background + black aruco markers
  
     # Define the criteria for the k-means algorithm
     # This is a tuple with three elements: (type of termination criteria, maximum number of iterations, epsilon/required accuracy)
@@ -112,13 +123,13 @@ def extract_features(img_path: str) -> dict:
     colors = [
             #   ("green", np.array([0, 101, 55])), 
             #   ("red", np.array([96, 9, 5])),
-            #   ("yellow", np.array([166, 132, 0])),
-              ("orange", np.array([149, 37, 0])),
+              ("yellow", np.array([166, 132, 0])),
+              ("orange", np.array([172, 52, 0])),
             #   ("pink", np.array([241, 101, 122])),
-              ("turquoise", np.array([17, 129, 123])),
+              ("turquoise", np.array([23, 127, 116])),
             #   ("blue", np.array([0, 105, 237])),
             #   ("dark blue", np.array([11, 13, 200])),
-              ("purple", np.array([14, 11, 16]))
+            #   ("purple", np.array([13, 12, 14]))
             ]
     
     # identify the cluster closest to each color
@@ -147,6 +158,13 @@ def extract_features(img_path: str) -> dict:
         for contour in contours:
             area = cv2.contourArea(contour)
             perimeter = cv2.arcLength(contour, closed=True)
+            # print("Area", area)
+            # print("perimter", perimeter)
+            if area < 10000:
+                continue
+            if perimeter < 100:
+                continue
+
             roundness = 4 * np.pi * area / perimeter**2
             is_square = roundness < 0.785
 
@@ -155,11 +173,11 @@ def extract_features(img_path: str) -> dict:
             u = x + w/2
             v = y + h/2
 
-            # if aruco marker, skip this object
-            # aruco markers are at the corners of the image
-            if (u < 100 or u > 850) and (v < 100 or v > 600):
-                continue
-            
+            # # if aruco marker, skip this object
+            # # aruco markers are at the corners of the image
+            # if (u < 100 or u > 850) and (v < 100 or v > 600):
+            #     continue
+
             # calculate orientation of square
             rect = cv2.minAreaRect(contour)
             orientation = rect[2]
@@ -186,7 +204,9 @@ def annotate_features(path, objects):
     colors = {
         "orange": (0, 37, 149),
         "turquoise": (123, 129, 17),
-        "purple": (16, 11, 14)
+        "purple": (16, 11, 14),
+        "green": (55, 101, 0),
+        "yellow": (0, 132, 166)
     }
     font = cv2.FONT_HERSHEY_SIMPLEX # for text
     img = cv2.imread(path) # read in image
@@ -221,8 +241,8 @@ def annotate_features(path, objects):
 
 
 if __name__ == "__main__":
-    path = "test-image-3-29.png"
-    img = get_img(path)
-    img = transform_img(path)
-    # objects = extract_features(path)
-    # annotate_features(path, objects)
+    path = "test-image-3-29-2.png"
+    # img = get_img(path)
+    # img = transform_img(path)
+    objects = extract_features(path)
+    annotate_features(path, objects)

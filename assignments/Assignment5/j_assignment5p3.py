@@ -34,9 +34,16 @@ def move_to_t_point(abb_rrc, x: float, y: float, z: float):
     """
     Move end effector to a point in the task frame. 
     """
+    ppi = 96
+    inch_to_mm = 25.4
+    
+    x = x / ppi * inch_to_mm
+    y = y / ppi * inch_to_mm
+    # z = z / ppi * inch_to_mm
+    print("x", x, "y", y, "z", z)
     # Convert task frame position to world frame position
     ee_frame_w = abb_rrc.send_and_wait(rrc.GetFrame())
-    ee_frame_t = cg.Frame([x, y, z], [1, 0, 0], [0, -1, 0]) # where we want to move the EE to
+    ee_frame_t = cg.Frame([x, y, z], [1, 0, 0], [0, 1, 0]) # where we want to move the EE to
     ee_frame_w = transform_task_to_world_frame(ee_frame_t, task_frame) 
 
     # Move the robot to the new position
@@ -46,23 +53,25 @@ def move_to_t_point(abb_rrc, x: float, y: float, z: float):
 def pick_object(abb_rrc, object):
     # move to object, then down on object
     # one block is about 3.125 mm
-    move_to_t_point(abb_rrc, object["position"]["x"], object["position"]["y"], 5)
-    move_to_t_point(abb_rrc, object["position"]["x"], object["position"]["y"], 3.5)
+    print("pick object", object)
+    move_to_t_point(abb_rrc, object["position"]["x"], object["position"]["y"], -20)
+    move_to_t_point(abb_rrc, object["position"]["x"], object["position"]["y"], 1.5)
     # turn gripper on
-    abb_rrc.send_and_wait(rrc.SetDigital('DO00', True))
-    abb_rrc.send_and_wait(rrc.WaitTime(0.5))
+    # abb_rrc.send_and_wait(rrc.SetDigital('DO00', True))
+    # abb_rrc.send_and_wait(rrc.WaitTime(0.5))
     # move object upwards
-    move_to_t_point(abb_rrc, object["position"]["x"], object["position"]["y"], 5)
+    move_to_t_point(abb_rrc, object["position"]["x"], object["position"]["y"], -20)
 
 
 def place_object(abb_rrc, object, largest_object_position, angle):
+    print("place object", object)
     # object should ideally be on robot's grip at this point
     x = largest_object_position[object["color"]][0]
     y = largest_object_position[object["color"]][1]
     z = largest_object_position[object["color"]][2]
 
     # move item on top of largest object (base of pile)'s position
-    move_to_t_point(abb_rrc, x, y, z + 2)
+    move_to_t_point(abb_rrc, x, y, z - 20)
     
     # rotate object by angle
     # TODO: CHECK ROTATION IMPLEMENTATION
@@ -76,18 +85,19 @@ def place_object(abb_rrc, object, largest_object_position, angle):
         # Move the robot to the rotated frame
         abb_rrc.send_and_wait(rrc.MoveToFrame(rotated_frame, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
 
+    else:
     # move gripper down
-    move_to_t_point(abb_rrc, x, y, z + 0.5)
+        move_to_t_point(abb_rrc, x, y, z - 1.5)
     
-    # turn gripper off
-    abb_rrc.send_and_wait(rrc.SetDigital('DO00', False))
-    abb_rrc.send_and_wait(rrc.WaitTime(0.5))
+    # # turn gripper off
+    # abb_rrc.send_and_wait(rrc.SetDigital('DO00', False))
+    # abb_rrc.send_and_wait(rrc.WaitTime(0.5))
 
     # move gripper up
-    move_to_t_point(abb_rrc, x, y, z + 2)
+    move_to_t_point(abb_rrc, x, y, z - 20)
 
     # update values since pile height has increased. 1/8 inch is 3.175 mm
-    largest_object_position[object["color"]] = (x, y, z + 3.175)
+    largest_object_position[object["color"]] = (x, y, z - 5)
 
 
 def sort_objects_into_piles(abb_rrc, objects):
@@ -100,6 +110,7 @@ def sort_objects_into_piles(abb_rrc, objects):
     # }
     # get the mapping of the color to the position coordinates of the LARGEST object of each color
     largest_object_position = {}
+    largest_object_size = {}
     for obj in objects:
         color = obj["color"]
         size = obj["size"]
@@ -108,10 +119,11 @@ def sort_objects_into_piles(abb_rrc, objects):
 
         if color not in largest_object_position:
             # tuple consists of x coordinate, y coordinate, and height to place next block
-            largest_object_position[color] = (x, y, 0)
+            largest_object_position[color] = (x, y, 3.125)
+            largest_object_size[color] = size
         else:
-            if size > largest_object_position[color]:
-                largest_object_position[color] = (x, y, 0)
+            if size > largest_object_size[color]:
+                largest_object_position[color] = (x, y, 3.125)
 
     for obj in objects:
         color = obj["color"]
@@ -155,7 +167,8 @@ if __name__ == '__main__':
     print("moved to home position.")
 
     # Define the task space points: top left, top right, bottom left
-    task_frame = cg.Frame.from_points([254.71, 192.44, 17.51], [-229.4, 192.41, 15.51], [253.71, 491.79, 19.13])
+    # task_frame = cg.Frame.from_points([254.71, 192.44, 17.51], [-229.4, 192.41, 15.51], [253.71, 491.79, 19.13])
+    task_frame = cg.Frame.from_points([254.71, 192.44, 24], [-229.4, 192.41, 24], [253.71, 491.79, 24])
     # top left: [254.71, 192.44, 17.51]
     # top right: [-229.4, 192.41, 15.51]
     # bottom left: [253.71, 491.79, 19.13] 
@@ -163,8 +176,8 @@ if __name__ == '__main__':
     # width: 48cm is 18.89 inches (19)
 
     # Define the base pose of the first pile
-    path = "image.png"
-    img = get_img(path)
+    path = "G:/My Drive/2023-24/arc380/arc380group1/assignments/Assignment5/test-image-3-29-2-flipped.png"
+    # img = get_img(path)
     objects = extract_features(path) # CANDACE'S CODE
     sort_objects_into_piles(abb_rrc, objects)
 
