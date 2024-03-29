@@ -221,8 +221,8 @@ def annotate_features(path, objects):
 
 
 if __name__ == "__main__":
-    path = "test-image.png"
-    # img = get_img(path)
-    # img = transform_img(img)
-    objects = extract_features(path)
-    annotate_features(path, objects)
+    path = "test-image-3-29.png"
+    img = get_img(path)
+    img = transform_img(path)
+    # objects = extract_features(path)
+    # annotate_features(path, objects)

@@ -1,5 +1,6 @@
 import compas_rrc as rrc
 import compas.geometry as cg
+from ARC380_Assignment5 import get_img, extract_features
 
 # Assuming there is a robot object already initialized
 
@@ -144,7 +145,9 @@ if __name__ == '__main__':
     task_frame = cg.Frame.from_points([419.36, 178.04, 28.35], [419.14, 458.02, 30.40], [204.17, 178.02, 27.17])
 
     # Define the base pose of the first pile
-    objects = get_objects() # CANDACE'S CODE
+    path = "image.png"
+    img = get_img(path)
+    objects = extract_features(path) # CANDACE'S CODE
     sort_objects_into_piles(abb_rrc, objects)
 
     # ====================================================================================
