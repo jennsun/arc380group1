@@ -1,250 +1,194 @@
-from ARC380_Assignment5_helper import capture_img
-import numpy as np
-import cv2
-from matplotlib import pyplot as plt
-from cv2 import aruco
-from cv2 import RotatedRect
- 
- 
-"""
- 
-P2: Extract features (shape and color) and store each object in a class like and return an annotated image
-Input: image
-Output: annotated image
-and return an annotated image with 
-P3: 
-t features shape () and color and store them each object in a class where each object is a dictionary
+import compas_rrc as rrc
+import compas.geometry as cg
+import math
+from Assignment5P2 import get_img, extract_features, get_features
 
-object = {
-    color : "COLOR",
-    shape : "SHAPE",
-    size : DIMENSION,
-    position: {x: "X", y: "Y", z: "Z"},
-    orientation: DEGREES
-}
- 
-"""
+# Assuming there is a robot object already initialized
 
-# 2b
-def get_img(save_path):
+def transform_task_to_world_frame(ee_frame_t: cg.Frame, task_frame: cg.Frame) -> cg.Frame:
+    """Transform a task frame to the world frame.
+
+    Args:
+        ee_frame_t (cg.Frame): The end-effector frame defined in task space.
+        task_frame (cg.Frame): The task frame.
+
+    Returns:
+        cg.Frame: The task frame in the world frame.
+        FIX: Returning The END EFFECTOR frame in the world frame
     """
-    captures and saves an image, and returns the BGR version of the image.
+    ee_frame_w = None
+    # ================================== YOUR CODE HERE ==================================
+
+    # Part 1.d.
+    # transform a target end effector frame from task space to world frame
+    T = cg.Transformation.from_frame(task_frame)
+    print("T is", T)
+    ee_frame_t.transform(T)
+    ee_frame_w = ee_frame_t
+    print("ee_frame_w is", ee_frame_w)
+    
+    # ====================================================================================
+    return ee_frame_w
+
+def move_to_t_point(abb_rrc, x: float, y: float, z: float):
     """
-    img = capture_img(visualize=False, save=True, path=save_path)
-    # convert image from RGB (from realsense) to BGR (opencv)
-    return cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-    # return img
-
-
-def transform_img(path):
+    Move end effector to a point in the task frame. 
     """
-    transforms a given image by un-warping it and cropping it to the aruco markers
-    """
-    img = cv2.imread(path)
-    # aruco imports
-    dictionary = aruco.getPredefinedDictionary(aruco.DICT_6X6_250)
-    detector_params = aruco.DetectorParameters()
-    detector = aruco.ArucoDetector(dictionary, detector_params)
-
-    # detect aruco markers
-    corners, ids, rejected = detector.detectMarkers(img)
-    # markers_img = img.copy()
-    # aruco.drawDetectedMarkers(markers_img, corners, ids)
-
-    # plt.figure(figsize=(16,9))
-    # plt.imshow(markers_img)
-    # plt.title('Detected ArUco markers')
-    # plt.show()
-
-    # parameters of final image
-    width = 19
-    height = 12
     ppi = 96
-
-    # sort markers and define source and destination points
-    ids = ids.flatten()
-    corners = np.array([corners[i] for i in np.argsort(ids)])
-    corners = np.squeeze(corners)
-    ids = np.sort(ids)
-    src_pts = np.array([corners[0][1], corners[1][2], corners[2][3], corners[3][0]], dtype='float32')
-
-    print(src_pts)
-    dst_pts = np.array([[0, 0], [0, height*ppi], [width*ppi, height*ppi], [width*ppi, 0]], dtype='float32')
-
-    # do the transform and return the corrected image
-    M = cv2.getPerspectiveTransform(src_pts, dst_pts)
-    corrected_img = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))
-    corrected_img = corrected_img[:int(height*ppi), :int(width*ppi)]
-    cv2.imwrite(path, corrected_img)
-    plt.imshow(corrected_img)
-    plt.show()
-    return corrected_img
-
- 
-# 2c
-def extract_features(img_path: str) -> dict:
-    """
-    sample image path: "sample-image.png"
-    from an image, extracts color, shape, size, position, and orientation of objects
-    returns: dict of the objects in the image
-    """
-    # Given an image, separate objects and then loop through all objects to assign traits on each one
-    img = cv2.imread(img_path)
-    # Convert the image from BGR to RGB and display using matplotlib
-    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    plt.imshow(img_rgb)
-    plt.show()
- 
-    # Run k-means clustering on the image
-    # Reshape our image data to a flattened list of RGB values
-    img_data = img_rgb.reshape((-1, 3))
-    img_data = np.float32(img_data)
- 
-    # Define the number of clusters
-    k = 8 # 3 or 4 + white background + black aruco markers
- 
-    # Define the criteria for the k-means algorithm
-    # This is a tuple with three elements: (type of termination criteria, maximum number of iterations, epsilon/required accuracy)
-    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 0.5)
- 
-    # Run the k-means algorithm
-    # Parameters: data, number of clusters, best labels, criteria, number of attempts, initial centers
-    _, labels, centers = cv2.kmeans(img_data, k, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
-    centers = np.uint8(centers)
-    # print(f'Labels shape: {labels.shape}')
-    # print(f'Centers shape: {centers.shape}')
-    # print(f'Centers: \n{centers}')
-
-    kmeans_data = centers[labels.flatten()]
-    kmeans_img = kmeans_data.reshape(img.shape)
-    labels = labels.reshape(img.shape[:2])
-
-    # define colors in image
-    colors = [
-            #   ("green", np.array([0, 101, 55])), 
-            #   ("red", np.array([96, 9, 5])),
-              ("yellow", np.array([166, 132, 0])),
-              ("orange", np.array([172, 52, 0])),
-            #   ("pink", np.array([241, 101, 122])),
-              ("turquoise", np.array([23, 127, 116])),
-            #   ("blue", np.array([0, 105, 237])),
-            #   ("dark blue", np.array([11, 13, 200])),
-            #   ("purple", np.array([13, 12, 14]))
-            ]
+    inch_to_mm = 25.4
     
-    # identify the cluster closest to each color
-    objects = []
+    x = x / ppi * inch_to_mm
+    y = y / ppi * inch_to_mm
+    # z = z / ppi * inch_to_mm
+    print("x", x, "y", y, "z", z)
+    # Convert task frame position to world frame position
+    ee_frame_w = abb_rrc.send_and_wait(rrc.GetFrame())
+    ee_frame_t = cg.Frame([x, y, z], [1, 0, 0], [0, 1, 0]) # where we want to move the EE to
+    ee_frame_w = transform_task_to_world_frame(ee_frame_t, task_frame) 
 
-    for color_name, color_value in colors:
-        distances = np.linalg.norm(centers - color_value, axis=1)
-        cluster_label = np.argmin(distances)
+    # Move the robot to the new position
+    done = abb_rrc.send_and_wait(rrc.MoveToFrame(ee_frame_w, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
+    print("moved to new position: ", x, y, z)
+
+def pick_object(abb_rrc, object):
+    # move to object, then down on object
+    # one block is about 3.125 mm
+    print("pick object", object)
+    move_to_t_point(abb_rrc, object["position"]["x"], object["position"]["y"], -20)
+    move_to_t_point(abb_rrc, object["position"]["x"], object["position"]["y"], 14.0)
+    # turn gripper on
+    abb_rrc.send_and_wait(rrc.SetDigital('DO00', 1))
+    abb_rrc.send_and_wait(rrc.WaitTime(1.0))
+    # move object upwards
+    move_to_t_point(abb_rrc, object["position"]["x"], object["position"]["y"], -20)
+
+
+def place_object(abb_rrc, object, largest_object_position, angle):
+    print("place object", object)
+    # object should ideally be on robot's grip at this point
+    x = largest_object_position[object["color"]][0]
+    y = largest_object_position[object["color"]][1]
+    z = largest_object_position[object["color"]][2]
+    print("pile position is", x, y, z)
+    # move item on top of largest object (base of pile)'s position
+    move_to_t_point(abb_rrc, x, y, z - 12)
     
-        # All pixels that belong to this cluster will be white, and all others will be black
-        mask_img = np.zeros(kmeans_img.shape[:2], dtype='uint8')
-        mask_img[labels == cluster_label] = 255
+    # rotate object by angle
+    # TODO: CHECK ROTATION IMPLEMENTATION
+    if object["shape"] == "square":
+        current_frame = abb_rrc.send_and_wait(rrc.GetFrame())
+        # create rotation transformation around Z axis at the current location
+        angle = math.radians(angle)
+        rotation = cg.Rotation.from_axis_and_angle([0, 0, 1], angle, point=current_frame.point)
+        # Apply the rotation to the current end effector frame
+        rotated_frame = current_frame.transformed(rotation)
+        # Move the robot to the rotated frame
+        abb_rrc.send_and_wait(rrc.MoveToFrame(rotated_frame, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
+    else:
+        # move gripper down
+        move_to_t_point(abb_rrc, x, y, z + 2.5)
+        
+    # # turn gripper off
+    abb_rrc.send_and_wait(rrc.SetDigital('DO00', 0))
+    abb_rrc.send_and_wait(rrc.WaitTime(0.5))
 
-        contours, _ = cv2.findContours(mask_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    # move gripper up
+    move_to_t_point(abb_rrc, x, y, z - 20)
 
-        # Visualize the contours
-        # Parameters for drawContours: input image, contours, contour index (-1 means all contours), color, thickness
-        contour_img = img.copy()
-        cv2.drawContours(contour_img, contours, -1, (0, 255, 0), 3)
-    
-        # plt.imshow(cv2.cvtColor(contour_img, cv2.COLOR_BGR2RGB))
-        # plt.title(f'Contour image for cluster {cluster_label} corresponding to {color_name}')
-        # plt.gca().invert_yaxis()
-        # plt.show()
-
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            perimeter = cv2.arcLength(contour, closed=True)
-            # print("Area", area)
-            # print("perimter", perimeter)
-            if area < 10000:
-                continue
-            if perimeter < 100:
-                continue
-
-            roundness = 4 * np.pi * area / perimeter**2
-            is_square = roundness < 0.785
-
-            # calculate position
-            x, y, w, h = cv2.boundingRect(contour)
-            u = x + w/2
-            v = y + h/2
-
-            # # if aruco marker, skip this object
-            # # aruco markers are at the corners of the image
-            # if (u < 100 or u > 850) and (v < 100 or v > 600):
-            #     continue
-
-            # calculate orientation of square
-            rect = cv2.minAreaRect(contour)
-            orientation = rect[2]
-
-            # add to list of objects
-            shape = "square" if is_square else "circle"
-            objects.append(
-                {
-                    "color" : color_name,
-                    "shape" : shape,
-                    "size" : area,
-                    "position": {"x": u, "y": v},
-                    "orientation": orientation
-                }
-            )
-    print("number of objects found:", len(objects))
-    for o in objects:
-        print(o)
-    return objects          
- 
-# 2d
-def annotate_features(path, objects):
-    # define colors
-    colors = {
-        "orange": (0, 37, 149),
-        "turquoise": (123, 129, 17),
-        "purple": (16, 11, 14),
-        "green": (55, 101, 0),
-        "yellow": (0, 132, 166)
-    }
-    font = cv2.FONT_HERSHEY_SIMPLEX # for text
-    img = cv2.imread(path) # read in image
-
-    # annotate each object
-    for object in objects:
-        # extract features
-        color = object["color"]
-        shape = object["shape"]
-        area = object["size"]
-        x, y = (int(object["position"]["x"]), int(object["position"]["y"]))
-        orientation = object["orientation"]
-
-        if shape == "circle":
-            radius = int((area / np.pi)**0.5)
-            img = cv2.circle(img, center=(x, y), radius=radius, color=(255, 0, 0), thickness=5)
-            img = cv2.putText(img, text=f"{color} {shape}, area = {area}, position = ({x}, {y})", 
-                              org=(x-25, y + int(side_length / 2) + 25), 
-                              fontScale=1, fontFace=font, color=colors[color], thickness=1)
-        else: # shape is a square
-            side_length = int(area**0.5)
-            square = ((x, y), (side_length, side_length), orientation)
-            square = cv2.boxPoints(square)
-            square = np.intp(square)
-            cv2.drawContours(img, [square], 0, (255, 0, 0), 5)
-            img = cv2.putText(img, text=f"{color} {shape}, area = {area}, position = ({x}, {y})", 
-                              org=(x-25, y + int(side_length / 2) + 25), 
-                              fontScale=1, fontFace=font, color=colors[color], thickness=1)
-
-    plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-    plt.title("Annotated Image")
-    # plt.gca().invert_yaxis()
-    plt.show()
+    # update values since pile height has increased. 1/8 inch is 3.175 mm
+    largest_object_position[object["color"]] = (x, y, z - 2)
 
 
-if __name__ == "__main__":
-    path = "test-image-3-29-2.png"
+def sort_objects_into_piles(abb_rrc, objects):
+    # object = {
+    #     "color": color,
+    #     "shape": shape,
+    #     "size": (w, h),
+    #     "position": {"x": x_mm, "y": y_mm},
+    #     "orientation": angle
+    # }
+    # get the mapping of the color to the position coordinates of the LARGEST object of each color
+    largest_object_position = {}
+    largest_object_size = {}
+    for obj in objects:
+        color = obj["color"]
+        size = obj["size"]
+        shape = obj["shape"]
+        x = obj["position"]["x"]
+        y = obj["position"]["y"]
+
+        # bases should be circles
+        if color not in largest_object_position:
+            # tuple consists of x coordinate, y coordinate, and height to place next block
+            largest_object_position[color] = (x, y, 3.125)
+            largest_object_size[color] = size
+        else:
+            if size > largest_object_size[color] and shape == "circle":
+                largest_object_position[color] = (x, y, 3.125)
+
+    for obj in objects:
+        color = obj["color"]
+        size = obj["size"]
+        x = obj["position"]["x"]
+        y = obj["position"]["y"]
+        angle = obj["orientation"]
+
+        # if object is biggest object of that color, skip
+        if x == largest_object_position[color][0] and y == largest_object_position[color][1]:
+            continue
+
+        pick_object(abb_rrc, obj)
+        place_object(abb_rrc, obj, largest_object_position, angle)
+
+
+if __name__ == '__main__':
+
+    # Create Ros Client
+    ros = rrc.RosClient()
+    ros.run()
+
+    # Create ABB Client
+    abb_rrc = rrc.AbbClient(ros, '/rob1-rw6')
+    print('Connected to ROS.')
+
+    # ================================== YOUR CODE HERE ==================================
+
+    # Set tools
+    abb_rrc.send(rrc.SetTool('vac_gripper'))
+    print('set tool to vac_gripper.')
+
+
+    # Set speed [mm/s]
+    speed = 150 # 
+    print("speed set to", speed)
+
+    home = rrc.RobotJoints([0, 0, 0, 0, 90, 0])
+    print("about to send, home is", home)
+    done = abb_rrc.send_and_wait(rrc.MoveToJoints(home, [], speed, rrc.Zone.FINE))
+    print("moved to home position.")
+
+    # Define the task space points: top left, top right, bottom left
+    # task_frame = cg.Frame.from_points([254.71, 192.44, 17.51], [-229.4, 192.41, 15.51], [253.71, 491.79, 19.13])
+    task_frame = cg.Frame.from_points([248.49, 192.44, 26.81], [-229.4, 192.41, 24], [247.98, 494.92, 26.35])
+    # move_to_t_point(abb_rrc, x=971, y=626, z=30)
+    # top left: [254.71, 192.44, 17.51]
+    # top right: [-229.4, 192.41, 15.51]
+    # bottom left: [253.71, 491.79, 19.13] 
+    # height: 30cm is 11.81 inches (12)
+    # width: 48cm is 18.89 inches (19)
+
+    # Define the base pose of the first pile
+    # path = "test-image-4-7.png"
     # img = get_img(path)
-    # img = transform_img(path)
-    objects = extract_features(path)
-    annotate_features(path, objects)
+    objects = get_features() # CANDACE'S CODE
+    print("objects is", objects)
+    sort_objects_into_piles(abb_rrc, objects)
+
+    # ====================================================================================
+
+    # End of Code
+    print('Finished')
+
+    # Close client
+    ros.close()
+    ros.terminate()
