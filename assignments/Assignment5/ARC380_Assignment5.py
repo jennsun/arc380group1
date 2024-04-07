@@ -223,7 +223,8 @@ def annotate_features(path, objects):
         if shape == "circle":
             radius = int((area / np.pi)**0.5)
             img = cv2.circle(img, center=(x, y), radius=radius, color=(255, 0, 0), thickness=5)
-            img = cv2.putText(img, text=f"{color} {shape}", org=(x-25, y + radius + 25), 
+            img = cv2.putText(img, text=f"{color} {shape}, area = {area}, position = ({x}, {y})", 
+                              org=(x-25, y + int(side_length / 2) + 25), 
                               fontScale=1, fontFace=font, color=colors[color], thickness=1)
         else: # shape is a square
             side_length = int(area**0.5)
@@ -231,7 +232,8 @@ def annotate_features(path, objects):
             square = cv2.boxPoints(square)
             square = np.intp(square)
             cv2.drawContours(img, [square], 0, (255, 0, 0), 5)
-            img = cv2.putText(img, text=f"{color} {shape}", org=(x-25, y + int(side_length / 2) + 25), 
+            img = cv2.putText(img, text=f"{color} {shape}, area = {area}, position = ({x}, {y})", 
+                              org=(x-25, y + int(side_length / 2) + 25), 
                               fontScale=1, fontFace=font, color=colors[color], thickness=1)
 
     plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
