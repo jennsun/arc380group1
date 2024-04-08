@@ -126,6 +126,9 @@ def sort_objects_into_piles(abb_rrc, objects):
             if size > largest_object_size[color] and shape == "circle":
                 largest_object_position[color] = (x, y, 3.125)
 
+    # sort all the objects by size in decreasing order (larger to small)
+    objects = sorted(objects, key=lambda x: x["size"], reverse=True)
+
     for obj in objects:
         color = obj["color"]
         size = obj["size"]
