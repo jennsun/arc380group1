@@ -71,7 +71,7 @@ def place_object(abb_rrc, object, largest_object_position, angle):
     z = largest_object_position[object["color"]][2]
     print("pile position is", x, y, z)
     # move item on top of largest object (base of pile)'s position
-    move_to_t_point(abb_rrc, x, y, z - 12)
+    move_to_t_point(abb_rrc, x, y + 3, z - 12)
     
     # rotate object by angle
     # TODO: CHECK ROTATION IMPLEMENTATION
