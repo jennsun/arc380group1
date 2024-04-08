@@ -40,7 +40,7 @@ def transform_img(path):
     """
     transforms a given image by un-warping it and cropping it to the aruco markers
     """
-    img = cv2.imread("test-image-4-7.png")
+    img = cv2.imread("test-image-4-8.png")
     # aruco imports
     dictionary = aruco.getPredefinedDictionary(aruco.DICT_6X6_250)
     detector_params = aruco.DetectorParameters()
@@ -76,7 +76,7 @@ def transform_img(path):
     M = cv2.getPerspectiveTransform(src_pts, dst_pts)
     corrected_img = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))
     # corrected_img = corrected_img[:int(height*ppi), :int(width*ppi)]
-    cv2.imwrite("test-image-4-7-1.png", corrected_img)
+    cv2.imwrite("test-image-4-8-1.png", corrected_img)
     plt.imshow(corrected_img)
     plt.title('Corrected IMG')
     plt.show()
@@ -91,7 +91,7 @@ def extract_features(img_path: str) -> dict:
     returns: dict of the objects in the image
     """
     # Given an image, separate objects and then loop through all objects to assign traits on each one
-    img = cv2.imread("test-image-4-7-1.png")
+    img = cv2.imread("test-image-4-8-1.png")
     # Convert the image from BGR to RGB and display using matplotlib
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     plt.imshow(img_rgb)
@@ -168,7 +168,7 @@ def extract_features(img_path: str) -> dict:
                 continue
 
             roundness = 4 * np.pi * area / perimeter**2
-            is_square = roundness < 0.785
+            is_square = roundness < 0.78
 
             # calculate position
             x, y, w, h = cv2.boundingRect(contour)
@@ -245,10 +245,10 @@ def annotate_features(path, objects):
 
 
 if __name__ == "__main__":
-    path = "test-image-4-7.png"
+    path = "test-image-4-8.png"
     img = get_img(path)
-    path = "test-image-4-7-2.png"
+    path = "test-image-4-8-2.png"
     img = transform_img(path)
-    path = "test-image-4-7-3.png"
+    path = "test-image-4-8-3.png"
     objects = extract_features(path)
     annotate_features(path, objects)

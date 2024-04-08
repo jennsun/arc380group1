@@ -5,6 +5,8 @@ from Assignment5P2 import get_img, extract_features, get_features
 
 # Assuming there is a robot object already initialized
 
+y_offset = -13
+
 def transform_task_to_world_frame(ee_frame_t: cg.Frame, task_frame: cg.Frame) -> cg.Frame:
     """Transform a task frame to the world frame.
 
@@ -38,7 +40,7 @@ def move_to_t_point(abb_rrc, x: float, y: float, z: float):
     inch_to_mm = 25.4
     
     x = x / ppi * inch_to_mm
-    y = y / ppi * inch_to_mm
+    y = y / ppi * inch_to_mm - y_offset
     # z = z / ppi * inch_to_mm
     print("x", x, "y", y, "z", z)
     # Convert task frame position to world frame position
@@ -71,7 +73,7 @@ def place_object(abb_rrc, object, largest_object_position, angle):
     z = largest_object_position[object["color"]][2]
     print("pile position is", x, y, z)
     # move item on top of largest object (base of pile)'s position
-    move_to_t_point(abb_rrc, x, y + 3, z - 12)
+    move_to_t_point(abb_rrc, x, y, z - 12)
     
     # rotate object by angle
     # TODO: CHECK ROTATION IMPLEMENTATION
@@ -108,6 +110,8 @@ def sort_objects_into_piles(abb_rrc, objects):
     #     "orientation": angle
     # }
     # get the mapping of the color to the position coordinates of the LARGEST object of each color
+
+    objects = sorted(objects, key=lambda x:x['size'], reverse=True)
     largest_object_position = {}
     largest_object_size = {}
     for obj in objects:
