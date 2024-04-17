@@ -20,7 +20,7 @@ def capture(date:str):
     pipe = rs.pipeline()
     config = rs.config()
     config.enable_stream(rs.stream.color, 1920, 1080, rs.format.bgr8, 30)
-    config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+    # config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
     profile = pipe.start(config)
 
     profile = pipe.get_active_profile()
@@ -45,12 +45,12 @@ def capture(date:str):
         cf.keep()
         color_frame = cf
         
-        # get depth frame
-        df = frames.get_depth_frame()
-        if not df:
-            print('no depth frame captured')
-        df.keep()
-        depth_frame = df
+        # # get depth frame
+        # df = frames.get_depth_frame()
+        # if not df:
+        #     print('no depth frame captured')
+        # df.keep()
+        # depth_frame = df
     finally:
         print("finished capturing frame")
         pipe.stop()
@@ -58,18 +58,18 @@ def capture(date:str):
     # save color data
     print("saving data...")
     color_img = np.asanyarray(color_frame.get_data())
-    color_img = cv2.cvtColor(color_img, cv2.COLOR_RGB2BGR)
+    # color_img = cv2.cvtColor(color_img, cv2.COLOR_RGB2BGR)
     cv2.imwrite('color-img-' + date + '.png', color_img)
+    print('saved color image')
 
-    # save depth data
-    depth_data = np.asanyarray(depth_frame.get_data())
-    cv2.imwrite('depth-img-' + date + '.png', depth_data)
-    depth_file = 'depth-data-' + date +'.npy'
-    with open(depth_file, 'wb') as f:
-        np.save(f, depth_data)
-    print('saved color image and depth data')
+    # # save depth data
+    # depth_data = np.asanyarray(depth_frame.get_data())
+    # cv2.imwrite('depth-img-' + date + '.png', depth_data)
+    # depth_file = 'depth-data-' + date +'.npy'
+    # with open(depth_file, 'wb') as f:
+    #     np.save(f, depth_data)
 
-    return color_img, depth_data
+    return color_img
 
 # un-warp image and crop to aruco marker
 def transform_img(color_path, depth_path, show=False):
@@ -87,11 +87,6 @@ def transform_img(color_path, depth_path, show=False):
         plt.figure(figsize=(16,9))
         plt.imshow(img)
         plt.title('Original Color Image')
-        plt.show()
-
-        plt.figure(figsize=(16,9))
-        plt.imshow(depth_img)
-        plt.title('Original Depth Image')
         plt.show()
 
     # aruco imports
@@ -119,8 +114,8 @@ def transform_img(color_path, depth_path, show=False):
     # parameters of initial images
     color_width = 1920
     color_height = 1080
-    depth_width = 640
-    depth_height = 480
+    # depth_width = 640
+    # depth_height = 480
 
     # sort markers and define source and destination points
     ids = ids.flatten()
@@ -151,6 +146,98 @@ def transform_img(color_path, depth_path, show=False):
         # plt.show()
 
     return corrected_color_img# , corrected_depth_img
+
+# extract features from color image
+def extract_2d_features(color_path, show=False):
+    img = cv2.imread(color_path)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+    # flatten data
+    img_data = img.reshape((-1, 3))
+    img_data = np.float32(img_data)
+
+    # run k-means clustering
+    k = 8 # define number of clusters TODO
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 0.5)
+    _, labels, centers = cv2.kmeans(img_data, k, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+    centers = np.uint8(centers)
+    kmeans_data = centers[labels.flatten()]
+    kmeans_img = kmeans_data.reshape(img.shape)
+    labels = labels.reshape(img.shape[:2])
+
+    # find objects
+    colors = [
+            #   ("green", np.array([0, 101, 55])), 
+            #   ("red", np.array([96, 9, 5])),
+            #   ("yellow", np.array([166, 132, 0])),
+            #   ("orange", np.array([172, 52, 0])),
+            #   ("pink", np.array([241, 101, 122])),
+            #   ("turquoise", np.array([23, 127, 116])),
+            #   ("blue", np.array([0, 105, 237])),
+            #   ("dark blue", np.array([11, 13, 200])),
+            #   ("purple", np.array([13, 12, 14]))
+                ('block', np.array([108, 141, 155]))
+            ]
+    
+    objects = []
+    for color_name, color_value in colors:
+        distances = np.linalg.norm(centers - color_value, axis=1)
+        cluster_label = np.argmin(distances)
+    
+        # all pixels that belong to this cluster will be white, and all others will be black
+        mask_img = np.zeros(kmeans_img.shape[:2], dtype='uint8')
+        mask_img[labels == cluster_label] = 255
+        contours, _ = cv2.findContours(mask_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+
+        # visualize the contours
+        contour_img = img.copy()
+        cv2.drawContours(contour_img, contours, -1, (0, 255, 0), 3)
+
+        if show:
+            plt.imshow(cv2.cvtColor(contour_img, cv2.COLOR_BGR2RGB))
+            plt.title(f'Contour image for cluster {cluster_label} corresponding to {color_name}')
+            plt.gca().invert_yaxis()
+            plt.show()
+
+        # define features
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            perimeter = cv2.arcLength(contour, closed=True)
+            if area < 10000:
+                continue
+            if perimeter < 100:
+                continue
+
+            roundness = 4 * np.pi * area / perimeter**2
+            is_square = roundness < 0.78
+            is_block = is_square and roundness < 0.7
+            # TODO: find roundness of bricks (probably less than square?)
+
+            # calculate position
+            x, y, w, h = cv2.boundingRect(contour)
+            u = x + w/2
+            v = y + h/2
+
+            # calculate orientation of square
+            rect = cv2.minAreaRect(contour)
+            orientation = rect[2]
+
+            # add to list of objects
+            shape = "square" if is_square else "circle"
+            shape = 'block' if is_block else shape
+            objects.append(
+                {
+                    "color" : color_name,
+                    "shape" : shape,
+                    "size" : area,
+                    "position": {"x": u, "y": v},
+                    "orientation": orientation
+                }
+            )
+    print("number of objects found:", len(objects))
+    for o in objects:
+        print(o)
+    return objects
 
 # create point cloud from depth data
 def get_point_cloud(depth_path, pcd_path):
@@ -196,94 +283,6 @@ def filter_pcd(pcd, filtered_pcd_path):
 
     return filtered_pcd
 
-# extract features from color image
-def extract_2d_features(color_path, show=False):
-    img = cv2.imread(color_path)
-
-    # flatten data
-    img_data = img.reshape((-1, 3))
-    img_data = np.float32(img_data)
-
-    # run k-means clustering
-    k = 8 # define number of clusters TODO
-    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 0.5)
-    _, labels, centers = cv2.kmeans(img_data, k, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
-    centers = np.uint8(centers)
-    kmeans_data = centers[labels.flatten()]
-    kmeans_img = kmeans_data.reshape(img.shape)
-    labels = labels.reshape(img.shape[:2])
-
-    # find objects
-    colors = [
-            #   ("green", np.array([0, 101, 55])), 
-            #   ("red", np.array([96, 9, 5])),
-              ("yellow", np.array([166, 132, 0])),
-              ("orange", np.array([172, 52, 0])),
-            #   ("pink", np.array([241, 101, 122])),
-              ("turquoise", np.array([23, 127, 116])),
-            #   ("blue", np.array([0, 105, 237])),
-            #   ("dark blue", np.array([11, 13, 200])),
-            #   ("purple", np.array([13, 12, 14]))
-            ]
-    
-    objects = []
-    for color_name, color_value in colors:
-        distances = np.linalg.norm(centers - color_value, axis=1)
-        cluster_label = np.argmin(distances)
-    
-        # all pixels that belong to this cluster will be white, and all others will be black
-        mask_img = np.zeros(kmeans_img.shape[:2], dtype='uint8')
-        mask_img[labels == cluster_label] = 255
-        contours, _ = cv2.findContours(mask_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-
-        # visualize the contours
-        contour_img = img.copy()
-        cv2.drawContours(contour_img, contours, -1, (0, 255, 0), 3)
-
-        if show:
-            plt.imshow(cv2.cvtColor(contour_img, cv2.COLOR_BGR2RGB))
-            plt.title(f'Contour image for cluster {cluster_label} corresponding to {color_name}')
-            plt.gca().invert_yaxis()
-            plt.show()
-
-        # define features
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            perimeter = cv2.arcLength(contour, closed=True)
-            if area < 10000:
-                continue
-            if perimeter < 100:
-                continue
-
-            roundness = 4 * np.pi * area / perimeter**2
-            is_square = roundness < 0.78
-            # TODO: find roundness of bricks (probably less than square?)
-
-            # calculate position
-            x, y, w, h = cv2.boundingRect(contour)
-            u = x + w/2
-            v = y + h/2
-
-            # calculate orientation of square
-            rect = cv2.minAreaRect(contour)
-            orientation = rect[2]
-
-            # add to list of objects
-            shape = "square" if is_square else "circle"
-            objects.append(
-                {
-                    "color" : color_name,
-                    "shape" : shape,
-                    "size" : area,
-                    "position": {"x": u, "y": v},
-                    "orientation": orientation
-                }
-            )
-    print("number of objects found:", len(objects))
-    for o in objects:
-        print(o)
-    return objects
-
 # extract block features from pointcloud
 def extract_3d_features(pcd_path):
     pcd = o3d.io.read_point_cloud(pcd_path)
@@ -328,7 +327,7 @@ def extract_3d_features(pcd_path):
 
 
 if __name__ == '__main__':
-    color_img, depth_data = capture('4-17')
-    transform_img('color-img-4-17.png', 'depth-img-4-17.png', show=False)
+    # color_img, depth_data = capture('4-17')
+    # transform_img('color-img-4-17.png', 'depth-img-4-17.png', show=False)
 
-    # extract_2d_features('color-img-4-15.png', show=True)
+    extract_2d_features('color-img-4-15-corrected.png', show=True)
