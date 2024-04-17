@@ -20,7 +20,7 @@ def capture(date:str):
     pipe = rs.pipeline()
     config = rs.config()
     config.enable_stream(rs.stream.color, 1920, 1080, rs.format.bgr8, 30)
-    config.enable_stream(rs.stream.depth, 1920, 1080, rs.format.z16, 30)
+    config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
     profile = pipe.start(config)
 
     profile = pipe.get_active_profile()
@@ -56,6 +56,7 @@ def capture(date:str):
         pipe.stop()
     
     # save color data
+    print("saving data...")
     color_img = np.asanyarray(color_frame.get_data())
     color_img = cv2.cvtColor(color_img, cv2.COLOR_RGB2BGR)
     cv2.imwrite('color-img-' + date + '.png', color_img)
@@ -63,9 +64,9 @@ def capture(date:str):
     # save depth data
     depth_data = np.asanyarray(depth_frame.get_data())
     cv2.imwrite('depth-img-' + date + '.png', depth_data)
-    # depth_file = 'depth-data-' + date +'.npy'
-    # with open(depth_file, 'wb') as f:
-    #     np.save(f, depth_data)
+    depth_file = 'depth-data-' + date +'.npy'
+    with open(depth_file, 'wb') as f:
+        np.save(f, depth_data)
     print('saved color image and depth data')
 
     return color_img, depth_data
@@ -74,9 +75,27 @@ def capture(date:str):
 def transform_img(color_path, depth_path, show=False):
     img = cv2.imread(color_path)
     depth_img = cv2.imread(depth_path)
+    depth_data = None
+
+    with open('depth-data-4-15.npy', 'rb') as f:
+        depth_data = np.load(f)
+        plt.imshow(depth_data)
+        plt.show()
+    print(depth_data.shape)
+
+    if show:
+        plt.figure(figsize=(16,9))
+        plt.imshow(img)
+        plt.title('Original Color Image')
+        plt.show()
+
+        plt.figure(figsize=(16,9))
+        plt.imshow(depth_img)
+        plt.title('Original Depth Image')
+        plt.show()
 
     # aruco imports
-    dictionary = aruco.getPredefinedDictionary(aruco.DICT_6x6_250)
+    dictionary = aruco.getPredefinedDictionary(aruco.DICT_6X6_250)
     detector_params = aruco.DetectorParameters()
     detector = aruco.ArucoDetector(dictionary, detector_params)
 
@@ -97,6 +116,12 @@ def transform_img(color_path, depth_path, show=False):
     height = 12
     ppi = 96
 
+    # parameters of initial images
+    color_width = 1920
+    color_height = 1080
+    depth_width = 640
+    depth_height = 480
+
     # sort markers and define source and destination points
     ids = ids.flatten()
     corners = np.array([corners[i] for i in np.argsort(ids)])
@@ -114,18 +139,18 @@ def transform_img(color_path, depth_path, show=False):
     # corrected_img = corrected_img[:int(height*ppi), :int(width*ppi)]
     cv2.imwrite(color_path[:-4] + '-corrected.png', corrected_color_img)
 
-    corrected_depth_img = cv2.warpPerspective(depth_img, M, (depth_img.shape[1], depth_img.shape[0]))
-    cv2.imwrite(depth_path[:-4] + '-corrected.png', corrected_depth_img)
+    # corrected_depth_img = cv2.warpPerspective(depth_img, M, (depth_img.shape[1], depth_img.shape[0]))
+    # cv2.imwrite(depth_path[:-4] + '-corrected.png', corrected_depth_img)
     if show:
         plt.imshow(corrected_color_img)
         plt.title('Corrected IMG')
         plt.show()
 
-        plt.imshow(corrected_depth_img)
-        plt.title('Corrected Depth IMG')
-        plt.show()
+        # plt.imshow(corrected_depth_img)
+        # plt.title('Corrected Depth IMG')
+        # plt.show()
 
-    return corrected_color_img, corrected_depth_img
+    return corrected_color_img# , corrected_depth_img
 
 # create point cloud from depth data
 def get_point_cloud(depth_path, pcd_path):
@@ -300,3 +325,10 @@ def extract_3d_features(pcd_path):
     # TODO: get orientation of clusters? (or get this from 2D image?)
 
     return clusters, centroids
+
+
+if __name__ == '__main__':
+    color_img, depth_data = capture('4-17')
+    transform_img('color-img-4-17.png', 'depth-img-4-17.png', show=False)
+
+    # extract_2d_features('color-img-4-15.png', show=True)
