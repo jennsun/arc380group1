@@ -97,10 +97,9 @@ def transform_img(color_path, show=False):
     corners = np.array([corners[i] for i in np.argsort(ids)])
     corners = np.squeeze(corners)
     ids = np.sort(ids)
-    print("corners", corners)
+    # print("corners", corners)
     src_pts = np.array([corners[0][1], corners[1][2], corners[2][3], corners[3][0]], dtype='float32')
-
-    print(src_pts)
+    # print(src_pts)
     dst_pts = np.array([[0, 0], [0, height*ppi], [width*ppi, height*ppi], [width*ppi, 0]], dtype='float32')
 
     # do the transform and return the corrected image
@@ -138,10 +137,10 @@ def extract_2d_features(color_path, show=False):
     colors = [
             #   ("green", np.array([0, 101, 55])), 
             #   ("red", np.array([96, 9, 5])),
-            #   ("yellow", np.array([166, 132, 0])),
-            #   ("orange", np.array([172, 52, 0])),
+              ("yellow", np.array([166, 132, 0])),
+              ("orange", np.array([172, 52, 0])),
             #   ("pink", np.array([241, 101, 122])),
-            #   ("turquoise", np.array([23, 127, 116])),
+              ("turquoise", np.array([23, 127, 116])),
             #   ("blue", np.array([0, 105, 237])),
             #   ("dark blue", np.array([11, 13, 200])),
             #   ("purple", np.array([13, 12, 14]))
@@ -160,7 +159,13 @@ def extract_2d_features(color_path, show=False):
 
         # visualize the contours
         contour_img = img.copy()
-        cv2.drawContours(contour_img, contours, -1, (0, 255, 0), 3)
+        # cv2.drawContours(contour_img, contours, -1, (0, 255, 0), 3)
+
+        for c in contours:
+            rect = cv2.minAreaRect(c)
+            box = cv2.boxPoints(rect)
+            box = np.intp(box)
+            cv2.drawContours(contour_img, [box], 0, (0, 255, 0), 2)
 
         if show:
             plt.imshow(cv2.cvtColor(contour_img, cv2.COLOR_BGR2RGB))
@@ -172,14 +177,15 @@ def extract_2d_features(color_path, show=False):
         for contour in contours:
             area = cv2.contourArea(contour)
             perimeter = cv2.arcLength(contour, closed=True)
-            if area < 10000:
+            if area < 10000 or area > 100000:
                 continue
             if perimeter < 100:
                 continue
 
             roundness = 4 * np.pi * area / perimeter**2
+            # print('roundness:', roundness)
             is_square = roundness < 0.78
-            is_block = roundness < 0.7
+            is_block = area < 30000
             # TODO: find roundness of bricks (probably less than square?)
 
             # calculate position
@@ -187,22 +193,45 @@ def extract_2d_features(color_path, show=False):
             u = x + w/2
             v = y + h/2
 
+            orientation = None
+            box = None
             # calculate orientation of square
-            rect = cv2.minAreaRect(contour)
-            orientation = rect[2]
+            if is_square:
+                rect = cv2.minAreaRect(contour)
+                orientation = rect[2]
+            if is_block:
+                box = cv2.boxPoints(rect)
+                box = np.intp(box)
 
             # add to list of objects
             shape = "square" if is_square else "circle"
             shape = 'block' if is_block else shape
-            objects.append(
-                {
-                    "color" : color_name,
-                    "shape" : shape,
-                    "size" : area,
-                    "position": {"x": u, "y": v},
-                    "orientation": orientation
-                }
-            )
+            print(shape, color_name)
+
+            if shape == 'block':
+                if color_name == 'block':
+                    objects.append(
+                        {
+                            "color" : color_name,
+                            "shape" : shape,
+                            "size" : area,
+                            "position": {"x": u, "y": v},
+                            "orientation": orientation,
+                            "box": box
+                        }
+                    )
+            else:
+                if color_name != 'block':
+                    objects.append(
+                        {
+                            "color" : color_name,
+                            "shape" : shape,
+                            "size" : area,
+                            "position": {"x": u, "y": v},
+                            "orientation": orientation,
+                            "box": box
+                        }
+                    )
     print("number of objects found:", len(objects))
     for o in objects:
         print(o)
@@ -229,6 +258,7 @@ def annotate_features(img_path, annotated_path, objects):
         area = object["size"]
         x, y = (int(object["position"]["x"]), int(object["position"]["y"]))
         orientation = object["orientation"]
+        box = object["box"]
 
         if shape == "circle":
             side_length = np.sqrt(area)
@@ -238,7 +268,7 @@ def annotate_features(img_path, annotated_path, objects):
             img = cv2.putText(img, text=f"{color} {shape}, area = {area}, position = ({x}, {y})", 
                               org=(x-25, y + int(side_length / 2) + 25), 
                               fontScale=1, fontFace=font, color=colors[color], thickness=1)
-        else: # shape is a square
+        elif shape == "square":
             side_length = int(area**0.5)
             square = ((x, y), (side_length, side_length), orientation)
             square = cv2.boxPoints(square)
@@ -247,7 +277,11 @@ def annotate_features(img_path, annotated_path, objects):
             img = cv2.putText(img, text=f"{color} {shape}, area = {area}, position = ({x}, {y}), orientation = {orientation}", 
                               org=(x-25, y + int(side_length / 2) + 25), 
                               fontScale=1, fontFace=font, color=colors[color], thickness=1)
-
+        else: 
+            cv2.drawContours(img, [box], 0, (255, 0, 0), 5)
+            img = cv2.putText(img, text=f"{color} {shape}, area = {area}, position = ({x}, {y}), orientation = {orientation}", 
+                              org=(x-50, y + 35), 
+                              fontScale=1, fontFace=font, color=colors[color], thickness=1)
     cv2.imwrite(annotated_path, img)
     plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     plt.title("Annotated Image")
@@ -255,8 +289,8 @@ def annotate_features(img_path, annotated_path, objects):
     plt.show()
 
 if __name__ == '__main__':
-    # color_img, depth_data = capture('4-17')
-    # transform_img('color-img-4-17.png', 'depth-img-4-17.png', show=False)
+    color_img = capture('4-21')
+    transform_img('color-img-4-21.png', show=False)
 
-    objects = extract_2d_features('color-img-4-15-corrected.png', show=True)
-    annotate_features('color-img-4-15-corrected.png', 'color-img-4-15-corrected-annotated.png', objects)
+    objects = extract_2d_features('color-img-4-21-corrected.png', show=True)
+    annotate_features('color-img-4-21-corrected.png', 'color-img-4-21-corrected-annotated.png', objects)
