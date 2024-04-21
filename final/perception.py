@@ -20,7 +20,6 @@ def capture(date:str):
     pipe = rs.pipeline()
     config = rs.config()
     config.enable_stream(rs.stream.color, 1920, 1080, rs.format.bgr8, 30)
-    # config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
     profile = pipe.start(config)
 
     profile = pipe.get_active_profile()
@@ -44,13 +43,6 @@ def capture(date:str):
             print('no color frame captured')
         cf.keep()
         color_frame = cf
-        
-        # # get depth frame
-        # df = frames.get_depth_frame()
-        # if not df:
-        #     print('no depth frame captured')
-        # df.keep()
-        # depth_frame = df
     finally:
         print("finished capturing frame")
         pipe.stop()
@@ -62,26 +54,11 @@ def capture(date:str):
     cv2.imwrite('color-img-' + date + '.png', color_img)
     print('saved color image')
 
-    # # save depth data
-    # depth_data = np.asanyarray(depth_frame.get_data())
-    # cv2.imwrite('depth-img-' + date + '.png', depth_data)
-    # depth_file = 'depth-data-' + date +'.npy'
-    # with open(depth_file, 'wb') as f:
-    #     np.save(f, depth_data)
-
     return color_img
 
 # un-warp image and crop to aruco marker
-def transform_img(color_path, depth_path, show=False):
+def transform_img(color_path, show=False):
     img = cv2.imread(color_path)
-    depth_img = cv2.imread(depth_path)
-    depth_data = None
-
-    with open('depth-data-4-15.npy', 'rb') as f:
-        depth_data = np.load(f)
-        plt.imshow(depth_data)
-        plt.show()
-    print(depth_data.shape)
 
     if show:
         plt.figure(figsize=(16,9))
@@ -106,7 +83,7 @@ def transform_img(color_path, depth_path, show=False):
         plt.show()
     
     # parameters of final image
-    # TODO: change these
+    # TODO: change these?
     width = 19
     height = 12
     ppi = 96
@@ -114,8 +91,6 @@ def transform_img(color_path, depth_path, show=False):
     # parameters of initial images
     color_width = 1920
     color_height = 1080
-    # depth_width = 640
-    # depth_height = 480
 
     # sort markers and define source and destination points
     ids = ids.flatten()
@@ -134,18 +109,12 @@ def transform_img(color_path, depth_path, show=False):
     # corrected_img = corrected_img[:int(height*ppi), :int(width*ppi)]
     cv2.imwrite(color_path[:-4] + '-corrected.png', corrected_color_img)
 
-    # corrected_depth_img = cv2.warpPerspective(depth_img, M, (depth_img.shape[1], depth_img.shape[0]))
-    # cv2.imwrite(depth_path[:-4] + '-corrected.png', corrected_depth_img)
     if show:
         plt.imshow(corrected_color_img)
         plt.title('Corrected IMG')
         plt.show()
 
-        # plt.imshow(corrected_depth_img)
-        # plt.title('Corrected Depth IMG')
-        # plt.show()
-
-    return corrected_color_img# , corrected_depth_img
+    return corrected_color_img
 
 # extract features from color image
 def extract_2d_features(color_path, show=False):
@@ -210,7 +179,7 @@ def extract_2d_features(color_path, show=False):
 
             roundness = 4 * np.pi * area / perimeter**2
             is_square = roundness < 0.78
-            is_block = is_square and roundness < 0.7
+            is_block = roundness < 0.7
             # TODO: find roundness of bricks (probably less than square?)
 
             # calculate position
@@ -239,95 +208,55 @@ def extract_2d_features(color_path, show=False):
         print(o)
     return objects
 
-# create point cloud from depth data
-def get_point_cloud(depth_path, pcd_path):
-    depth_img = cv2.imread(depth_path)
+def annotate_features(img_path, annotated_path, objects):
+    # define colors
+    colors = {
+        "orange": (0, 37, 149),
+        "turquoise": (123, 129, 17),
+        "purple": (16, 11, 14),
+        "green": (55, 101, 0),
+        "yellow": (0, 132, 166),
+        "block": (0, 0, 0)
+    }
+    font = cv2.FONT_HERSHEY_SIMPLEX # for text
+    img = cv2.imread(img_path) # read in image
 
-    # define points
-    width, height = depth_img.shape[1], depth_img.shape[0]
-    x = np.linspace(-0.5, 0.5, width)
-    y = np.linspace(-0.5, 0.5, height)
-    xx, yy = np.meshgrid(x, y)
-    points = np.vstack(xx.flatten(), yy.flatten(), depth_img.flatten())
+    # annotate each object
+    for object in objects:
+        # extract features
+        color = object["color"]
+        shape = object["shape"]
+        area = object["size"]
+        x, y = (int(object["position"]["x"]), int(object["position"]["y"]))
+        orientation = object["orientation"]
 
-    # create point cloud
-    pcd = o3d.geoemtry.PointCloud()
-    pcd.points = o3d.utility.Vector3DVector(points)
-    pcd.paint_uniform_coor([0, 0, 1]) # paint all points blue
+        if shape == "circle":
+            side_length = np.sqrt(area)
+            # Ask candace about side_length
+            radius = int((area / np.pi)**0.5)
+            img = cv2.circle(img, center=(x, y), radius=radius, color=(255, 0, 0), thickness=5)
+            img = cv2.putText(img, text=f"{color} {shape}, area = {area}, position = ({x}, {y})", 
+                              org=(x-25, y + int(side_length / 2) + 25), 
+                              fontScale=1, fontFace=font, color=colors[color], thickness=1)
+        else: # shape is a square
+            side_length = int(area**0.5)
+            square = ((x, y), (side_length, side_length), orientation)
+            square = cv2.boxPoints(square)
+            square = np.intp(square)
+            cv2.drawContours(img, [square], 0, (255, 0, 0), 5)
+            img = cv2.putText(img, text=f"{color} {shape}, area = {area}, position = ({x}, {y}), orientation = {orientation}", 
+                              org=(x-25, y + int(side_length / 2) + 25), 
+                              fontScale=1, fontFace=font, color=colors[color], thickness=1)
 
-    # visualize and save point cloud
-    coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1, origin=[0, 0, 0])
-    o3d.visualization.draw_geometries([pcd, coordinate_frame])
-    o3d.io.write_point_cloud(pcd_path, pcd)
-
-    return pcd
-
-# remove background and outliers from point cloud
-def filter_pcd(pcd, filtered_pcd_path):
-    max_distance = 0.5 # max distance in meters in image
-    np_pcd = np.asarray(pcd.points)
-
-    # remove background
-    within_dist_idx = np.where(np.abs(np_pcd[:,2]) < max_distance)[0]
-    filtered_pcd = pcd.select_by_index(within_dist_idx)
-
-    # remove outliers
-    nb_neighbors = 20
-    std_ratio = 2
-    filtered_pcd, idx = filtered_pcd.remove_statistical_outlier(nb_neighbors=nb_neighbors, std_ratio=std_ratio)
-    
-    # visualize
-    coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1, origin=[0, 0, 0])
-    o3d.visualization.draw_geometries([filtered_pcd, coordinate_frame])
-    o3d.io.write_point_cloud(filtered_pcd_path, filtered_pcd)
-
-    return filtered_pcd
-
-# extract block features from pointcloud
-def extract_3d_features(pcd_path):
-    pcd = o3d.io.read_point_cloud(pcd_path)
-
-    # use RANSAC to fit a plane and locate the table surface
-    plane_model, inliers = pcd.segment_plane(distance_threshold=0.01, ransac_n=3, num_iterations=1000)
-    [a, b, c, d] = plane_model
-    print(f'Plane model: {a}x + {b}y + {c}z + {d} = 0')
-
-    # visualize the inliers and outliers of the plane
-    inlier_pcd = pcd.select_by_index(inliers)
-    inlier_pcd.paint_uniform_color([1, 0, 0])
-    print(f'Plane inliers point cloud has {len(inlier_pcd.points)} points.')
-
-    outlier_pcd = pcd.select_by_index(inliers, invert=True)
-    print(f'Plane outliers point cloud has {len(outlier_pcd.points)} points.')
-
-    coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1, origin=[0, 0, 0])
-    o3d.visualization.draw_geometries([inlier_pcd, outlier_pcd, coordinate_frame])
-
-    # basic segmentation of the outlier point cloud using DBSCAN clustering
-    labels = outlier_pcd.cluster_dbscan(eps=0.02, min_points=10, print_progress=True)
-    labels = np.asarray(labels)
-    print(f'Found {len(np.unique(labels))} clusters.')
-
-    # visualize the clusters in different colors
-    clusters = []
-    centroids = []
-    for i in range(len(labels)):
-        cluster = outlier_pcd.select_by_index(np.where(labels == i)[0])
-        random_color = list(np.random.choice(range(256), size=3))
-        cluster.paint_uniform_color(random_color)
-
-        points = cluster.points
-        centroid = np.mean(points, axis=1) # TODO: check axis
-        centroids.append(centroid)
-
-    o3d.visualization.draw_geometries(clusters.append(coordinate_frame))
-    # TODO: get orientation of clusters? (or get this from 2D image?)
-
-    return clusters, centroids
-
+    cv2.imwrite(annotated_path, img)
+    plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    plt.title("Annotated Image")
+    # plt.gca().invert_yaxis()
+    plt.show()
 
 if __name__ == '__main__':
     # color_img, depth_data = capture('4-17')
     # transform_img('color-img-4-17.png', 'depth-img-4-17.png', show=False)
 
-    extract_2d_features('color-img-4-15-corrected.png', show=True)
+    objects = extract_2d_features('color-img-4-15-corrected.png', show=True)
+    annotate_features('color-img-4-15-corrected.png', 'color-img-4-15-corrected-annotated.png', objects)
