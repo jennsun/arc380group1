@@ -12,7 +12,6 @@ import pyrealsense2 as rs
 import numpy as np
 import matplotlib.pyplot as plt
 from cv2 import aruco
-import open3d as o3d
 
 # capture color and depth data from realsense camera
 def capture(date:str):

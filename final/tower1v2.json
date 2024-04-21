@@ -7,8 +7,8 @@
         ], 
         "size": 2.5, 
         "rotation": 0.0, 
-        "color": "cyan", 
-        "shape": "disk"
+        "color": "turquoise", 
+        "shape": "circle"
     }, 
     "object1": {
         "position": [
@@ -18,8 +18,8 @@
         ], 
         "size": 2.5, 
         "rotation": 0.0, 
-        "color": "darkblue", 
-        "shape": "disk"
+        "color": "yellow", 
+        "shape": "circle"
     }, 
     "object0": {
         "position": [
@@ -29,7 +29,7 @@
         ], 
         "size": null, 
         "rotation": 2.0943951023932019, 
-        "color": null, 
+        "color": "block", 
         "shape": "block"
     }, 
     "object3": {
@@ -40,8 +40,8 @@
         ], 
         "size": 2.5, 
         "rotation": 0.0, 
-        "color": "blue", 
-        "shape": "disk"
+        "color": "turquoise", 
+        "shape": "circle"
     }, 
     "object6": {
         "position": [
@@ -51,7 +51,7 @@
         ], 
         "size": null, 
         "rotation": 2.0943951023932019, 
-        "color": null, 
+        "color": "block", 
         "shape": "block"
     }, 
     "object8": {
@@ -62,7 +62,7 @@
         ], 
         "size": null, 
         "rotation": 2.0943951023932019, 
-        "color": null, 
+        "color": "block", 
         "shape": "block"
     }, 
     "object2": {
@@ -73,7 +73,7 @@
         ], 
         "size": null, 
         "rotation": 2.0943951023932019, 
-        "color": null, 
+        "color": "block", 
         "shape": "block"
     }, 
     "object4": {
@@ -84,7 +84,7 @@
         ], 
         "size": null, 
         "rotation": 2.0943951023932019, 
-        "color": null, 
+        "color": "block", 
         "shape": "block"
     }, 
     "object7": {
@@ -95,7 +95,7 @@
         ], 
         "size": 2.5, 
         "rotation": 0.0, 
-        "color": "red", 
-        "shape": "disk"
+        "color": "orange", 
+        "shape": "circle"
     }
 }
