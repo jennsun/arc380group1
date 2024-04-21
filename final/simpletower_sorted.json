@@ -1,0 +1,110 @@
+[
+    {
+        "position": [
+            1775.7975602135655,
+            117.08875553671253,
+            14.760833333333332
+        ],
+        "size": null,
+        "rotation": 2.094395102393202,
+        "color": null,
+        "shape": "block",
+        "name": "object12"
+    },
+    {
+        "position": [
+            1775.2075828470536,
+            117.97569242466417,
+            17.127499999999998
+        ],
+        "size": 2.5,
+        "rotation": 0.0,
+        "color": "darkblue",
+        "shape": "disk",
+        "name": "object13"
+    },
+    {
+        "position": [
+            1775.7975602135655,
+            117.08875553671253,
+            31.88833333333333
+        ],
+        "size": null,
+        "rotation": 2.094395102393202,
+        "color": null,
+        "shape": "block",
+        "name": "object30"
+    },
+    {
+        "position": [
+            1775.2075828470536,
+            117.97569242466417,
+            34.254999999999995
+        ],
+        "size": 2.5,
+        "rotation": 0.0,
+        "color": "blue",
+        "shape": "disk",
+        "name": "object31"
+    },
+    {
+        "position": [
+            1775.7975602135655,
+            117.08875553671253,
+            49.01583333333331
+        ],
+        "size": null,
+        "rotation": 2.094395102393202,
+        "color": null,
+        "shape": "block",
+        "name": "object44"
+    },
+    {
+        "position": [
+            1775.2075828470536,
+            117.97569242466417,
+            51.38249999999998
+        ],
+        "size": 2.5,
+        "rotation": 0.0,
+        "color": "cyan",
+        "shape": "disk",
+        "name": "object45"
+    },
+    {
+        "position": [
+            1775.7975602135655,
+            117.08875553671251,
+            66.1433333333333
+        ],
+        "size": null,
+        "rotation": 2.094395102393202,
+        "color": null,
+        "shape": "block",
+        "name": "object50"
+    },
+    {
+        "position": [
+            1775.2075828470536,
+            117.97569242466417,
+            68.50999999999998
+        ],
+        "size": 2.5,
+        "rotation": 0.0,
+        "color": "red",
+        "shape": "disk",
+        "name": "object55"
+    },
+    {
+        "position": [
+            1775.7975602135655,
+            117.08875553671251,
+            83.27083333333331
+        ],
+        "size": null,
+        "rotation": 2.094395102393202,
+        "color": null,
+        "shape": "block",
+        "name": "object58"
+    }
+]
