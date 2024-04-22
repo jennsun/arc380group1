@@ -1,110 +1,101 @@
 [
     {
         "position": [
-            1775.7975602135655,
-            117.08875553671253,
+            0, 0, 
             14.760833333333332
         ],
         "size": null,
         "rotation": 2.094395102393202,
         "color": "block",
         "shape": "block",
-        "name": "object12"
+        "name": "object0"
     },
     {
         "position": [
-            1775.2075828470536,
-            117.97569242466417,
+            0, 0, 
             17.127499999999998
         ],
         "size": 2.5,
         "rotation": 0.0,
-        "color": "turquoise",
+        "color": "yellow",
         "shape": "circle",
-        "name": "object13"
+        "name": "object1"
     },
     {
         "position": [
-            1775.7975602135655,
-            117.08875553671253,
+            0, 0, 
             31.88833333333333
         ],
         "size": null,
         "rotation": 2.094395102393202,
         "color": "block",
         "shape": "block",
-        "name": "object30"
+        "name": "object2"
     },
     {
         "position": [
-            1775.2075828470536,
-            117.97569242466417,
+            0, 0, 
             34.254999999999995
         ],
         "size": 2.5,
         "rotation": 0.0,
-        "color": "orange",
+        "color": "turquoise",
         "shape": "circle",
-        "name": "object31"
+        "name": "object3"
     },
     {
         "position": [
-            1775.7975602135655,
-            117.08875553671253,
+            0, 0, 
             49.01583333333331
         ],
         "size": null,
         "rotation": 2.094395102393202,
         "color": "block",
         "shape": "block",
-        "name": "object44"
+        "name": "object4"
     },
     {
         "position": [
-            1775.2075828470536,
-            117.97569242466417,
+            0, 0, 
             51.38249999999998
         ],
         "size": 2.5,
         "rotation": 0.0,
         "color": "turquoise",
         "shape": "circle",
-        "name": "object45"
+        "name": "object5"
     },
     {
         "position": [
-            1775.7975602135655,
-            117.08875553671251,
-            66.1433333333333
+            0, 0, 
+            66.14333333333332
         ],
         "size": null,
         "rotation": 2.094395102393202,
         "color": "block",
         "shape": "block",
-        "name": "object50"
+        "name": "object6"
     },
     {
         "position": [
-            1775.2075828470536,
-            117.97569242466417,
+            0, 0, 
             68.50999999999998
         ],
         "size": 2.5,
         "rotation": 0.0,
-        "color": "yellow",
+        "color": "orange",
         "shape": "circle",
-        "name": "object55"
+        "name": "object7"
     },
     {
         "position": [
-            1775.7975602135655,
-            117.08875553671251,
-            83.27083333333331
+            0, 0, 
+            83.27083333333333
         ],
         "size": null,
         "rotation": 2.094395102393202,
         "color": "block",
         "shape": "block",
-        "name": "object58"
+        "name": "object8"
     }
 ]

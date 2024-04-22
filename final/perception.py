@@ -12,7 +12,6 @@ import pyrealsense2 as rs
 import numpy as np
 import matplotlib.pyplot as plt
 from cv2 import aruco
-import open3d as o3d
 
 # capture color and depth data from realsense camera
 def capture(date:str):
@@ -177,7 +176,7 @@ def extract_2d_features(color_path, show=False):
         for contour in contours:
             area = cv2.contourArea(contour)
             perimeter = cv2.arcLength(contour, closed=True)
-            if area < 10000 or area > 100000:
+            if area < 5000 or area > 100000:
                 continue
             if perimeter < 100:
                 continue
@@ -186,7 +185,8 @@ def extract_2d_features(color_path, show=False):
             # print('roundness:', roundness)
             is_square = roundness < 0.78
             is_block = area < 30000
-            # TODO: find roundness of bricks (probably less than square?)
+            if is_block:
+                print(area, perimeter)
 
             # calculate position
             x, y, w, h = cv2.boundingRect(contour)
@@ -208,8 +208,9 @@ def extract_2d_features(color_path, show=False):
             shape = 'block' if is_block else shape
             print(shape, color_name)
 
-            if shape == 'block':
-                if color_name == 'block':
+            if color_name == 'block':
+                if shape == 'block':
+                    print("found a block")
                     objects.append(
                         {
                             "color" : color_name,
@@ -220,8 +221,10 @@ def extract_2d_features(color_path, show=False):
                             "box": box
                         }
                     )
+                else:
+                    print("color is block but shape is not block")
             else:
-                if color_name != 'block':
+                if shape != 'block':
                     objects.append(
                         {
                             "color" : color_name,
@@ -289,8 +292,8 @@ def annotate_features(img_path, annotated_path, objects):
     plt.show()
 
 if __name__ == '__main__':
-    color_img = capture('4-21')
-    transform_img('color-img-4-21.png', show=False)
+    color_img = capture('4-21-1')
+    transform_img('color-img-4-21-1.png', show=False)
 
-    objects = extract_2d_features('color-img-4-21-corrected.png', show=True)
-    annotate_features('color-img-4-21-corrected.png', 'color-img-4-21-corrected-annotated.png', objects)
+    objects = extract_2d_features('color-img-4-21-1-corrected.png', show=True)
+    annotate_features('color-img-4-21-1-corrected.png', 'color-img-4-21-1-corrected-annotated.png', objects)
