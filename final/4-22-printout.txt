@@ -1,0 +1,260 @@
+(arc380) PS G:\My Drive\2023-24\arc380\arc380group1\final> python .\main.py
+Connected to ROS.
+set tool to vac_gripper.
+speed set to 150
+about to send, home is RobotJoints([0, 0, 0, 0, 90, 0])
+moved to home position.
+capturing data...
+finished capturing frame
+saving data...
+saved color image
+circle yellow
+circle orange
+circle turquoise
+circle turquoise
+17578.5 609.345233798027
+block block
+found a block
+17122.5 581.903670668602
+block block
+found a block
+17621.0 607.445739030838
+block block
+found a block
+17566.5 591.0365778207779
+block block
+found a block
+17635.0 605.5533845424652
+block block
+found a block
+number of objects found: 9
+{'color': 'yellow', 'shape': 'circle', 'size': 45140.5, 'position': {'x': 1494.5, 'y': 701.5}, 'orientation': None, 'box': None}
+{'color': 'orange', 'shape': 'circle', 'size': 45535.0, 'position': {'x': 1127.0, 'y': 358.0}, 'orientation': None, 'box': None}
+{'color': 'turquoise', 'shape': 'circle', 'size': 44179.0, 'position': {'x': 1155.0, 'y': 724.0}, 'orientation': None, 'box': None}
+{'color': 'turquoise', 'shape': 'circle', 'size': 44600.0, 'position': {'x': 1498.0, 'y': 358.5}, 'orientation': None, 'box': None}
+{'color': 'block', 'shape': 'block', 'size': 17578.5, 'position': {'x': 358.0, 'y': 735.5}, 'orientation': 17.002853393554688, 'box': array([[249, 750],
+       [275, 663],
+       [465, 721],
+       [439, 808]], dtype=int64)}
+{'color': 'block', 'shape': 'block', 'size': 17122.5, 'position': {'x': 732.5, 'y': 702.5}, 'orientation': 50.946861267089844, 'box': array([[627, 729],
+       [780, 605],
+       [836, 674],
+       [683, 798]], dtype=int64)}
+{'color': 'block', 'shape': 'block', 'size': 17621.0, 'position': {'x': 520.0, 'y': 547.0}, 'orientation': 16.13283920288086, 'box': array([[411, 561],
+       [436, 474],
+       [628, 530],
+       [603, 617]], dtype=int64)}
+{'color': 'block', 'shape': 'block', 'size': 17566.5, 'position': {'x': 635.0, 'y': 384.5}, 'orientation': 81.46923065185547, 'box': array([[529, 353],
+       [725, 324],
+       [738, 415],
+       [543, 444]], dtype=int64)}
+{'color': 'block', 'shape': 'block', 'size': 17635.0, 'position': {'x': 391.5, 'y': 295.5}, 'orientation': 63.43495178222656, 'box': array([[282, 297],
+       [460, 209],
+       [500, 290],
+       [323, 379]], dtype=int64)}
+picking block block
+x 94.72083333333332 y 194.60104166666665 z -13
+ee_frame_w is Frame(Point(153.684, 387.055, 38.959), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(153.684, 387.055, 38.959), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  94.72083333333332 194.60104166666665 -13
+x 94.72083333333332 y 194.60104166666665 z -33
+ee_frame_w is Frame(Point(153.566, 387.085, 58.958), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(153.566, 387.085, 58.958), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  94.72083333333332 194.60104166666665 -33
+placing block block
+x 0 y 0 z -34.76083333333333
+ee_frame_w is Frame(Point(248.286, 192.493, 61.570), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.286, 192.493, 61.570), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -34.76083333333333
+x 0 y 0 z -16.76083333333333
+ee_frame_w is Frame(Point(248.391, 192.465, 43.571), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.391, 192.465, 43.571), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -16.76083333333333
+x 0 y 0 z -34.76083333333333
+ee_frame_w is Frame(Point(248.286, 192.493, 61.570), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.286, 192.493, 61.570), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -34.76083333333333
+-----------------------------------------------------
+picking yellow circle
+x 395.41979166666664 y 185.60520833333334 z -3
+ee_frame_w is Frame(Point(-146.951, 378.025, 27.204), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(-146.951, 378.025, 27.204), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  395.41979166666664 185.60520833333334 -3
+x 395.41979166666664 y 185.60520833333334 z -23
+ee_frame_w is Frame(Point(-147.068, 378.055, 47.204), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(-147.068, 378.055, 47.204), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  395.41979166666664 185.60520833333334 -23
+placing yellow circle
+x 0 y 0 z -37.1275
+ee_frame_w is Frame(Point(248.272, 192.496, 63.937), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.272, 192.496, 63.937), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -37.1275
+x 0 y 0 z -19.127499999999998
+ee_frame_w is Frame(Point(248.378, 192.469, 45.937), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.378, 192.469, 45.937), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -19.127499999999998
+x 0 y 0 z -37.1275
+ee_frame_w is Frame(Point(248.272, 192.496, 63.937), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.272, 192.496, 63.937), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -37.1275
+-----------------------------------------------------
+picking block block
+x 193.80729166666666 y 185.86979166666666 z -13
+ee_frame_w is Frame(Point(54.600, 378.317, 38.389), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(54.600, 378.317, 38.389), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  193.80729166666666 185.86979166666666 -13
+x 193.80729166666666 y 185.86979166666666 z -33
+ee_frame_w is Frame(Point(54.482, 378.347, 58.389), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(54.482, 378.347, 58.389), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  193.80729166666666 185.86979166666666 -33
+placing block block
+x 0 y 0 z -51.88833333333333
+ee_frame_w is Frame(Point(248.185, 192.518, 78.697), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.185, 192.518, 78.697), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -51.88833333333333
+x 0 y 0 z -33.88833333333333
+ee_frame_w is Frame(Point(248.291, 192.491, 60.698), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.291, 192.491, 60.698), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -33.88833333333333
+x 0 y 0 z -51.88833333333333
+ee_frame_w is Frame(Point(248.185, 192.518, 78.697), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.185, 192.518, 78.697), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -51.88833333333333
+-----------------------------------------------------
+picking turquoise circle
+x 305.59375 y 191.55833333333334 z -3
+ee_frame_w is Frame(Point(-57.126, 383.983, 27.724), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(-57.126, 383.983, 27.724), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  305.59375 191.55833333333334 -3
+x 305.59375 y 191.55833333333334 z -23
+ee_frame_w is Frame(Point(-57.244, 384.014, 47.723), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(-57.244, 384.014, 47.723), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  305.59375 191.55833333333334 -23
+placing turquoise circle
+x 0 y 0 z -54.254999999999995
+ee_frame_w is Frame(Point(248.171, 192.522, 81.064), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.171, 192.522, 81.064), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -54.254999999999995
+x 0 y 0 z -36.254999999999995
+ee_frame_w is Frame(Point(248.277, 192.495, 63.064), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.277, 192.495, 63.064), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -36.254999999999995
+x 0 y 0 z -54.254999999999995
+ee_frame_w is Frame(Point(248.171, 192.522, 81.064), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.171, 192.522, 81.064), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -54.254999999999995
+-----------------------------------------------------
+picking block block
+x 137.58333333333334 y 144.72708333333333 z -13
+ee_frame_w is Frame(Point(110.825, 337.178, 38.782), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(110.825, 337.178, 38.782), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  137.58333333333334 144.72708333333333 -13
+x 137.58333333333334 y 144.72708333333333 z -33
+ee_frame_w is Frame(Point(110.707, 337.208, 58.782), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(110.707, 337.208, 58.782), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  137.58333333333334 144.72708333333333 -33
+placing block block
+x 0 y 0 z -69.01583333333332
+ee_frame_w is Frame(Point(248.084, 192.544, 95.825), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.084, 192.544, 95.825), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -69.01583333333332
+x 0 y 0 z -51.01583333333331
+ee_frame_w is Frame(Point(248.190, 192.517, 77.825), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.190, 192.517, 77.825), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -51.01583333333331
+x 0 y 0 z -69.01583333333332
+ee_frame_w is Frame(Point(248.084, 192.544, 95.825), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.084, 192.544, 95.825), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -69.01583333333332
+-----------------------------------------------------
+picking turquoise circle
+x 396.3458333333333 y 94.85312499999999 z -3
+ee_frame_w is Frame(Point(-147.872, 287.273, 27.336), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(-147.872, 287.273, 27.336), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  396.3458333333333 94.85312499999999 -3
+x 396.3458333333333 y 94.85312499999999 z -23
+ee_frame_w is Frame(Point(-147.989, 287.303, 47.336), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(-147.989, 287.303, 47.336), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  396.3458333333333 94.85312499999999 -23
+placing turquoise circle
+x 0 y 0 z -71.38249999999998
+ee_frame_w is Frame(Point(248.070, 192.548, 98.191), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.070, 192.548, 98.191), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -71.38249999999998
+x 0 y 0 z -53.38249999999998
+ee_frame_w is Frame(Point(248.176, 192.521, 80.192), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.176, 192.521, 80.192), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -53.38249999999998
+x 0 y 0 z -71.38249999999998
+ee_frame_w is Frame(Point(248.070, 192.548, 98.191), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.070, 192.548, 98.191), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -71.38249999999998
+-----------------------------------------------------
+picking block block
+x 168.01041666666666 y 101.73229166666665 z -13
+ee_frame_w is Frame(Point(80.401, 294.181, 38.668), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(80.401, 294.181, 38.668), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  168.01041666666666 101.73229166666665 -13
+x 168.01041666666666 y 101.73229166666665 z -33
+ee_frame_w is Frame(Point(80.283, 294.211, 58.668), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(80.283, 294.211, 58.668), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  168.01041666666666 101.73229166666665 -33
+placing block block
+x 0 y 0 z -86.14333333333332
+ee_frame_w is Frame(Point(247.983, 192.570, 112.952), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(247.983, 192.570, 112.952), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -86.14333333333332
+x 0 y 0 z -68.14333333333332
+ee_frame_w is Frame(Point(248.089, 192.543, 94.952), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.089, 192.543, 94.952), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -68.14333333333332
+x 0 y 0 z -86.14333333333332
+ee_frame_w is Frame(Point(247.983, 192.570, 112.952), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(247.983, 192.570, 112.952), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -86.14333333333332
+-----------------------------------------------------
+picking orange circle
+x 298.18541666666664 y 94.72083333333332 z -3
+ee_frame_w is Frame(Point(-49.713, 287.147, 27.914), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(-49.713, 287.147, 27.914), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  298.18541666666664 94.72083333333332 -3
+x 298.18541666666664 y 94.72083333333332 z -23
+ee_frame_w is Frame(Point(-49.831, 287.177, 47.913), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(-49.831, 287.177, 47.913), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  298.18541666666664 94.72083333333332 -23
+placing orange circle
+x 0 y 0 z -88.50999999999998
+ee_frame_w is Frame(Point(247.970, 192.574, 115.318), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(247.970, 192.574, 115.318), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -88.50999999999998
+x 0 y 0 z -70.50999999999998
+ee_frame_w is Frame(Point(248.075, 192.547, 97.319), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(248.075, 192.547, 97.319), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -70.50999999999998
+x 0 y 0 z -88.50999999999998
+ee_frame_w is Frame(Point(247.970, 192.574, 115.318), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(247.970, 192.574, 115.318), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -88.50999999999998
+-----------------------------------------------------
+picking block block
+x 103.584375 y 78.18437499999999 z -13
+ee_frame_w is Frame(Point(144.827, 270.637, 39.083), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(144.827, 270.637, 39.083), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  103.584375 78.18437499999999 -13
+x 103.584375 y 78.18437499999999 z -33
+ee_frame_w is Frame(Point(144.709, 270.668, 59.082), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(144.709, 270.668, 59.082), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  103.584375 78.18437499999999 -33
+placing block block
+x 0 y 0 z -103.27083333333333
+ee_frame_w is Frame(Point(247.883, 192.596, 130.079), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(247.883, 192.596, 130.079), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -103.27083333333333
+x 0 y 0 z -85.27083333333333
+ee_frame_w is Frame(Point(247.989, 192.569, 112.079), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(247.989, 192.569, 112.079), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -85.27083333333333
+x 0 y 0 z -103.27083333333333
+ee_frame_w is Frame(Point(247.883, 192.596, 130.079), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+after transformation, ee_frame_w is  Frame(Point(247.883, 192.596, 130.079), Vector(-1.000, -0.000, -0.006), Vector(-0.000, 1.000, -0.002))
+moving to new position:  0 0 -103.27083333333333
