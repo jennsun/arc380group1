@@ -127,9 +127,11 @@ def place_object(abb_rrc, place_position, shape, angle):
 
     # move item on top of largest object (base of pile)'s position
     move_to_t_point_rhino(abb_rrc, x, y, z - 20)
+
+     # move gripper down
+    move_to_t_point_rhino(abb_rrc, x, y, z - 2)
     
     # rotate object by angle
-    # TODO: CHECK ROTATION IMPLEMENTATION
     if shape == "block" or shape == "square":
         current_frame = abb_rrc.send_and_wait(rrc.GetFrame())
         # create rotation transformation around Z axis at the current location
@@ -140,9 +142,6 @@ def place_object(abb_rrc, place_position, shape, angle):
         rotated_frame = current_frame.transformed(rotation)
         # Move the robot to the rotated frame
         abb_rrc.send_and_wait(rrc.MoveToFrame(rotated_frame, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
-    else:
-        # move gripper down
-        move_to_t_point_rhino(abb_rrc, x, y, z)
         
     # # turn gripper off
     abb_rrc.send_and_wait(rrc.SetDigital('DO00', 0))
