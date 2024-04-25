@@ -51,10 +51,14 @@ def move_to_t_point(abb_rrc, x: float, y: float, z: float):
     # Move the robot to the new position
     done = abb_rrc.send_and_wait(rrc.MoveToFrame(ee_frame_w, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
 
-def move_keep_rotation(abb_rrc, x, y, z, rotation):
-    ee_frame_w = cg.Frame(cg.Point(x, y, z), rotation)
-    done = abb_rrc.send_and_wait(rrc.MoveToFrame(ee_frame_w, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
-    
+def move_keep_rotation(abb_rrc, x, y, z, orientation):
+    angle = math.radians(orientation)
+    current_frame = abb_rrc.send_and_wait(rrc.GetFrame())
+    rotation = cg.Rotation.from_axis_and_angle([0, 0, 1], angle, point=[x, y, z])
+    # Apply the rotation to the current end effector frame
+    rotated_frame = current_frame.transformed(rotation)
+    # Move the robot to the rotated frame
+    abb_rrc.send_and_wait(rrc.MoveToFrame(rotated_frame, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
 
 def move_to_t_point_rhino(abb_rrc, x: float, y: float, z: float):
     """
@@ -118,20 +122,21 @@ def pick_object(abb_rrc, pick_location, shape):
     # one block is about 3.125 mm
     move_to_t_point(abb_rrc, x, y, z - 20)
 
-    if shape == "block":
+    # if shape == "block":
         # rotate gripper to match block
-        current_frame = abb_rrc.send_and_wait(rrc.GetFrame())
-        # create rotation transformation around Z axis at the current location
-        # rotation is already in radians
-        # angle = math.radians(angle)
-        rotation = cg.Rotation.from_axis_and_angle([0, 0, 1], orientation, point=current_frame.point)
-        # Apply the rotation to the current end effector frame
-        rotated_frame = current_frame.transformed(rotation)
-        # Move the robot to the rotated frame
-        abb_rrc.send_and_wait(rrc.MoveToFrame(rotated_frame, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
+        # current_frame = abb_rrc.send_and_wait(rrc.GetFrame())
+        # move_keep_rotation(abb_rrc, x, y, z, orientation)
+        # # create rotation transformation around Z axis at the current location
+        # # rotation is already in radians
+        # # angle = math.radians(angle)
+        # rotation = cg.Rotation.from_axis_and_angle([0, 0, 1], orientation, point=current_frame.point)
+        # # Apply the rotation to the current end effector frame
+        # rotated_frame = current_frame.transformed(rotation)
+        # # Move the robot to the rotated frame
+        # abb_rrc.send_and_wait(rrc.MoveToFrame(rotated_frame, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
 
     # Move the robot downwards in the z-axis
-    move_keep_rotation(abb_rrc, x, y, z, orientation)
+    move_keep_rotation(abb_rrc, x, y, z - 2, orientation)
     # move_to_t_point(abb_rrc, x, y, z)
     # turn gripper on
     abb_rrc.send_and_wait(rrc.SetDigital('DO00', 1))
@@ -139,7 +144,7 @@ def pick_object(abb_rrc, pick_location, shape):
     # move object upwards
     # move_to_t_point(abb_rrc, x, y, z -20)
     # Move the robot 50 mm upwards in the z-axis
-    move_keep_rotation(abb_rrc, x, y, z - 20)
+    move_keep_rotation(abb_rrc, x, y, z - 20, orientation)
 
 
 def place_object(abb_rrc, place_position, shape, angle):
