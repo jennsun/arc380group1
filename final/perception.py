@@ -183,7 +183,7 @@ def extract_2d_features(color_path, show=False):
 
             roundness = 4 * np.pi * area / perimeter**2
             # print('roundness:', roundness)
-            is_square = roundness < 0.78
+            is_square = roundness < 0.7
             is_block = area < 30000
             if is_block:
                 print(area, perimeter)
@@ -202,6 +202,7 @@ def extract_2d_features(color_path, show=False):
             if is_block:
                 box = cv2.boxPoints(rect)
                 box = np.intp(box)
+
 
             # add to list of objects
             shape = "square" if is_square else "circle"
@@ -268,7 +269,7 @@ def annotate_features(img_path, annotated_path, objects):
             # Ask candace about side_length
             radius = int((area / np.pi)**0.5)
             img = cv2.circle(img, center=(x, y), radius=radius, color=(255, 0, 0), thickness=5)
-            img = cv2.putText(img, text=f"{color} {shape}, area = {area}, position = ({x}, {y})", 
+            img = cv2.putText(img, text=f"{color} {shape}, ({x}, {y})", 
                               org=(x-25, y + int(side_length / 2) + 25), 
                               fontScale=1, fontFace=font, color=colors[color], thickness=1)
         elif shape == "square":
@@ -277,14 +278,14 @@ def annotate_features(img_path, annotated_path, objects):
             square = cv2.boxPoints(square)
             square = np.intp(square)
             cv2.drawContours(img, [square], 0, (255, 0, 0), 5)
-            img = cv2.putText(img, text=f"{color} {shape}, area = {area}, position = ({x}, {y}), orientation = {orientation}", 
+            img = cv2.putText(img, text=f"{color} {shape}, ({x}, {y}), {orientation}", 
                               org=(x-25, y + int(side_length / 2) + 25), 
                               fontScale=1, fontFace=font, color=colors[color], thickness=1)
         else: 
             cv2.drawContours(img, [box], 0, (255, 0, 0), 5)
-            img = cv2.putText(img, text=f"{color} {shape}, area = {area}, position = ({x}, {y}), orientation = {orientation}", 
+            img = cv2.putText(img, text=f"{color} {shape}, ({x}, {y}), {orientation}", 
                               org=(x-50, y + 35), 
-                              fontScale=1, fontFace=font, color=colors[color], thickness=1)
+                              fontScale=1, fontFace=font, color=(255, 255, 255), thickness=1)
     cv2.imwrite(annotated_path, img)
     plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     plt.title("Annotated Image")
