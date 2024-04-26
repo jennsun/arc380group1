@@ -13,6 +13,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from cv2 import aruco
 
+def pts_dist(pt1, pt2):
+    return ((pt1[0] - pt2[0])**2 + (pt1[1] - pt2[1])**2)**0.5
+
 # capture color and depth data from realsense camera
 def capture(date:str):
     # start and configure camera
@@ -101,11 +104,21 @@ def transform_img(color_path, show=False):
     # print(src_pts)
     dst_pts = np.array([[0, 0], [0, height*ppi], [width*ppi, height*ppi], [width*ppi, 0]], dtype='float32')
 
+    if show:
+        markers_img = img.copy()
+        # aruco.drawDetectedMarkers(markers_img, corners, ids)
+        plt.figure(figsize=(16,9))
+        plt.imshow(markers_img)
+        plt.plot(*zip(*src_pts), marker='o', color='r', ls='')
+        plt.title('Detected ArUco markers')
+        plt.show()
+
     # do the transform and return the corrected image
     M = cv2.getPerspectiveTransform(src_pts, dst_pts)
     corrected_color_img = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))
-    # corrected_img = corrected_img[:int(height*ppi), :int(width*ppi)]
-    cv2.imwrite(color_path[:-4] + '-corrected.png', corrected_color_img)
+    corrected_color_img = corrected_color_img[:int(height*ppi), :int(width*ppi)]
+    corrected_color_img = cv2.cvtColor(corrected_color_img, cv2.COLOR_BGR2RGB)
+    cv2.imwrite(color_path[:-4] + '-corrected-2.png', corrected_color_img)
 
     if show:
         plt.imshow(corrected_color_img)
@@ -117,7 +130,6 @@ def transform_img(color_path, show=False):
 # extract features from color image
 def extract_2d_features(color_path, show=False):
     img = cv2.imread(color_path)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     # flatten data
     img_data = img.reshape((-1, 3))
@@ -136,10 +148,10 @@ def extract_2d_features(color_path, show=False):
     colors = [
             #   ("green", np.array([0, 101, 55])), 
             #   ("red", np.array([96, 9, 5])),
-              ("yellow", np.array([166, 132, 0])),
-              ("orange", np.array([172, 52, 0])),
+              ("yellow", np.array([0, 132, 166])),
+              ("orange", np.array([0, 52, 172])),
             #   ("pink", np.array([241, 101, 122])),
-              ("turquoise", np.array([23, 127, 116])),
+              ("turquoise", np.array([116, 127, 23])),
             #   ("blue", np.array([0, 105, 237])),
             #   ("dark blue", np.array([11, 13, 200])),
             #   ("purple", np.array([13, 12, 14]))
@@ -202,6 +214,10 @@ def extract_2d_features(color_path, show=False):
             if is_block:
                 box = cv2.boxPoints(rect)
                 box = np.intp(box)
+                length1 = pts_dist(box[0], box[1])
+                length2 = pts_dist(box[1], box[2])
+                if length1 < length2:
+                    orientation += 90 # ORIENTATION GOING CW FROM VERTICAL
 
 
             # add to list of objects
@@ -293,8 +309,8 @@ def annotate_features(img_path, annotated_path, objects):
     plt.show()
 
 if __name__ == '__main__':
-    color_img = capture('4-21-1')
-    transform_img('color-img-4-21-1.png', show=False)
+    # color_img = capture('4-21-1')
+    transform_img('color-img-4-21-2.png', show=True)
 
-    objects = extract_2d_features('color-img-4-21-1-corrected.png', show=True)
-    annotate_features('color-img-4-21-1-corrected.png', 'color-img-4-21-1-corrected-annotated.png', objects)
+    objects = extract_2d_features('color-img-4-21-2-corrected.png', show=True)
+    annotate_features('color-img-4-21-2-corrected.png', 'color-img-4-21-2-corrected-annotated.png', objects)
