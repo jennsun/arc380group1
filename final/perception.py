@@ -8,7 +8,7 @@ libraries and techniques for perception
 
 import cv2
 import time
-import pyrealsense2 as rs
+# import pyrealsense2 as rs
 import numpy as np
 import matplotlib.pyplot as plt
 from cv2 import aruco
@@ -17,50 +17,89 @@ def pts_dist(pt1, pt2):
     return ((pt1[0] - pt2[0])**2 + (pt1[1] - pt2[1])**2)**0.5
 
 # capture color and depth data from realsense camera
-def capture(date:str):
-    # start and configure camera
-    pipe = rs.pipeline()
-    config = rs.config()
-    config.enable_stream(rs.stream.color, 1920, 1080, rs.format.bgr8, 30)
-    profile = pipe.start(config)
+# def capture(date:str):
+#     # start and configure camera
+#     pipe = rs.pipeline()
+#     config = rs.config()
+#     config.enable_stream(rs.stream.color, 1920, 1080, rs.format.bgr8, 30)
+#     profile = pipe.start(config)
 
-    profile = pipe.get_active_profile()
-    device = profile.get_device()
-    color_sensor = device.first_color_sensor()
+#     profile = pipe.get_active_profile()
+#     device = profile.get_device()
+#     color_sensor = device.first_color_sensor()
 
-    color_sensor.set_option(rs.option.enable_auto_exposure, 1)
-    color_sensor.set_option(rs.option.enable_auto_white_balance, 1)
+#     color_sensor.set_option(rs.option.enable_auto_exposure, 1)
+#     color_sensor.set_option(rs.option.enable_auto_white_balance, 1)
 
-    # wait for the auto exposure and white balance to stabilize
-    time.sleep(2)
+#     # wait for the auto exposure and white balance to stabilize
+#     time.sleep(2)
     
-    print("capturing data...")
+#     print("capturing data...")
 
-    try:
-        frames = pipe.wait_for_frames()
+#     try:
+#         frames = pipe.wait_for_frames()
 
-        # get color frame
-        cf = frames.get_color_frame()
-        if not cf:
-            print('no color frame captured')
-        cf.keep()
-        color_frame = cf
-    finally:
-        print("finished capturing frame")
-        pipe.stop()
+#         # get color frame
+#         cf = frames.get_color_frame()
+#         if not cf:
+#             print('no color frame captured')
+#         cf.keep()
+#         color_frame = cf
+#     finally:
+#         print("finished capturing frame")
+#         pipe.stop()
     
-    # save color data
-    print("saving data...")
-    color_img = np.asanyarray(color_frame.get_data())
-    # color_img = cv2.cvtColor(color_img, cv2.COLOR_RGB2BGR)
-    cv2.imwrite('color-img-' + date + '.png', color_img)
-    print('saved color image')
+#     # save color data
+#     print("saving data...")
+#     color_img = np.asanyarray(color_frame.get_data())
+#     # color_img = cv2.cvtColor(color_img, cv2.COLOR_RGB2BGR)
+#     cv2.imwrite('color-img-' + date + '.png', color_img)
+#     print('saved color image')
 
-    return color_img
+#     return color_img
+
+
+def capture_mac(date:str):
+     # Initialize the video capture object with the camera index
+    cap = cv2.VideoCapture(0)  # Adjust the index if necessary
+
+    if not cap.isOpened():
+        print("Cannot open camera")
+        exit()
+
+    # Set the desired resolution
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+
+    # Initiate first capture to start autoexposure
+    ret, frame = cap.read()
+
+    time.sleep(2)  # Allow the camera to warm up
+
+    # Actual captured image
+    ret, frame = cap.read()
+
+    # Check if the frame was captured successfully
+    if ret:
+        # # Display the captured image
+        # cv2.imshow('Captured Image', frame)
+        # cv2.waitKey(0)  # Wait for a key press to exit
+        # cv2.destroyAllWindows()
+
+        # Optionally, save the image to a file
+        cv2.imwrite('color-img-' + date + '.png', frame)
+    else:
+        print("Failed to capture frame")
+
+    # Release the video capture object
+    cap.release()
+    return frame
+
 
 # un-warp image and crop to aruco marker
 def transform_img(color_path, show=False):
     img = cv2.imread(color_path)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
     if show:
         plt.figure(figsize=(16,9))
@@ -110,19 +149,20 @@ def transform_img(color_path, show=False):
         plt.imshow(markers_img)
         plt.plot(*zip(*src_pts), marker='o', color='r', ls='')
         plt.title('Detected ArUco markers')
-        plt.show()
+        # plt.show()
 
     # do the transform and return the corrected image
     M = cv2.getPerspectiveTransform(src_pts, dst_pts)
     corrected_color_img = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))
     corrected_color_img = corrected_color_img[:int(height*ppi), :int(width*ppi)]
     corrected_color_img = cv2.cvtColor(corrected_color_img, cv2.COLOR_BGR2RGB)
+    corrected_color_img = cv2.flip(corrected_color_img, 0)
     cv2.imwrite(color_path[:-4] + '-corrected.png', corrected_color_img)
 
     if show:
         plt.imshow(corrected_color_img)
         plt.title('Corrected IMG')
-        plt.show()
+        # plt.show()
 
     return corrected_color_img
 
@@ -181,7 +221,7 @@ def extract_2d_features(color_path, show=False):
             plt.imshow(cv2.cvtColor(contour_img, cv2.COLOR_BGR2RGB))
             plt.title(f'Contour image for cluster {cluster_label} corresponding to {color_name}')
             plt.gca().invert_yaxis()
-            plt.show()
+            # plt.show()
 
         # define features
         for contour in contours:
@@ -204,7 +244,7 @@ def extract_2d_features(color_path, show=False):
             u = x + w/2
             v = y + h/2
 
-            orientation = None
+            orientation = 0
             box = None
             # calculate orientation of square
             if is_square:
@@ -305,11 +345,11 @@ def annotate_features(img_path, annotated_path, objects):
     plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     plt.title("Annotated Image")
     # plt.gca().invert_yaxis()
-    plt.show()
+    # plt.show()
 
 if __name__ == '__main__':
-    color_img = capture('4-26')
-    transform_img('color-img-4-26.png', show=True)
+    color_img = capture_mac('4-26')
+    transform_img('color-img-4-26.png', show=False)
 
-    objects = extract_2d_features('color-img-4-26-corrected.png', show=True)
+    objects = extract_2d_features('color-img-4-26-corrected.png', show=False)
     annotate_features('color-img-4-26-corrected.png', 'color-img-4-26-corrected-annotated.png', objects)

@@ -5,7 +5,7 @@ import json
 import math
 import cv2
 import time
-import pyrealsense2 as rs
+# import pyrealsense2 as rs
 import numpy as np
 import matplotlib.pyplot as plt
 from cv2 import aruco
@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
 
     # Set speed [mm/s]
-    speed = 150 # 
+    speed = 450 # 
     print("speed set to", speed)
 
     home = rrc.RobotJoints([0, 0, 0, 0, 90, 0])
@@ -46,11 +46,11 @@ if __name__ == '__main__':
     # ====================================================================================
 
     # Define the task space points: top left, bottom left, top right
-    task_frame = cg.Frame.from_points([248.49, 192.44, 26.81], [247.98, 494.92, 26.35], [-229.4, 192.41, 24])
+    task_frame = cg.Frame.from_points([248.49, 192.44, 25], [248.49, 494.92, 25], [-229.4, 192.44, 25])
 
     # add perception stuff
-    date = '4-21-2'
-    img = capture(date)
+    date = '4-26-2'
+    img = capture_mac(date)
     transform_img('color-img-' + date + '.png', show=False)
     ground_objects = extract_2d_features('color-img-' + date + '-corrected.png', show=False)
     annotate_features('color-img-' + date + '-corrected.png', 'color-img-' + date + '-corrected-annotated.png', ground_objects)
