@@ -85,9 +85,8 @@ def transform_img(color_path, show=False):
         plt.show()
     
     # parameters of final image
-    # TODO: change these?
-    width = 19
-    height = 12
+    width = 18.875
+    height = 11.75
     ppi = 96
 
     # parameters of initial images
@@ -118,7 +117,7 @@ def transform_img(color_path, show=False):
     corrected_color_img = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))
     corrected_color_img = corrected_color_img[:int(height*ppi), :int(width*ppi)]
     corrected_color_img = cv2.cvtColor(corrected_color_img, cv2.COLOR_BGR2RGB)
-    cv2.imwrite(color_path[:-4] + '-corrected-2.png', corrected_color_img)
+    cv2.imwrite(color_path[:-4] + '-corrected.png', corrected_color_img)
 
     if show:
         plt.imshow(corrected_color_img)
@@ -309,8 +308,8 @@ def annotate_features(img_path, annotated_path, objects):
     plt.show()
 
 if __name__ == '__main__':
-    # color_img = capture('4-21-1')
-    transform_img('color-img-4-21-2.png', show=True)
+    color_img = capture('4-26')
+    transform_img('color-img-4-26.png', show=True)
 
-    objects = extract_2d_features('color-img-4-21-2-corrected.png', show=True)
-    annotate_features('color-img-4-21-2-corrected.png', 'color-img-4-21-2-corrected-annotated.png', objects)
+    objects = extract_2d_features('color-img-4-26-corrected.png', show=True)
+    annotate_features('color-img-4-26-corrected.png', 'color-img-4-26-corrected-annotated.png', objects)
