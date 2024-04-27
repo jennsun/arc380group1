@@ -77,6 +77,7 @@ def capture_mac(date:str):
     time.sleep(2)  # Allow the camera to warm up
 
     # Actual captured image
+    print("Taking photo...")
     ret, frame = cap.read()
 
     # Check if the frame was captured successfully
@@ -233,8 +234,9 @@ def extract_2d_features(color_path, show=False):
                 continue
 
             roundness = 4 * np.pi * area / perimeter**2
-            is_square = roundness < 0.75
-            is_block = area < 20000
+            # is_square = area > 33000# roundness < 0.75
+            is_square = False
+            is_block = roundness < 0.75 and  area < 20000
 
             # calculate position
             x, y, w, h = cv2.boundingRect(contour)
@@ -244,7 +246,7 @@ def extract_2d_features(color_path, show=False):
             orientation = 0
             box = None
             # calculate orientation of square
-            if is_square:
+            if is_square or is_block:
                 rect = cv2.minAreaRect(contour)
                 orientation = rect[2]
             if is_block:
@@ -344,8 +346,8 @@ def annotate_features(img_path, annotated_path, objects):
     plt.show()
 
 if __name__ == '__main__':
-    # color_img = capture_mac('4-26')
-    transform_img('color-img-4-26.png', show=True)
+    color_img = capture_mac('4-27')
+    transform_img('color-img-4-27.png', show=True)
 
-    objects = extract_2d_features('color-img-4-26-corrected.png', show=True)
-    annotate_features('color-img-4-26-corrected.png', 'color-img-4-26-corrected-annotated.png', objects)
+    objects = extract_2d_features('color-img-4-27-corrected.png', show=True)
+    annotate_features('color-img-4-27-corrected.png', 'color-img-4-27-corrected-annotated.png', objects)

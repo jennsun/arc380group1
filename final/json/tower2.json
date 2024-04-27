@@ -1,0 +1,290 @@
+[
+    {
+        "position": [
+            68.77417822639569,
+            -195.338459161683,
+            19.969999999999974
+        ],
+        "size": 3.0,
+        "rotation": 0.0,
+        "color": "yellow",
+        "shape": "circle",
+        "name": "object0"
+    },
+    {
+        "position": [
+            68.77417822639569,
+            -54.13633930269416,
+            19.969999999999974
+        ],
+        "size": 3.0,
+        "rotation": 0.0,
+        "color": "yellow",
+        "shape": "circle",
+        "name": "object1"
+    },
+    {
+        "position": [
+            92.49652805704899,
+            -56.25580367022052,
+            19.97999999999999
+        ],
+        "size": null,
+        "rotation": 4.5558557443022405,
+        "color": null,
+        "shape": "block",
+        "name": "object4"
+    },
+    {
+        "position": [
+            57.205604786390325,
+            -28.90286366864956,
+            19.97999999999999
+        ],
+        "size": null,
+        "rotation": 0.40862181811024956,
+        "color": null,
+        "shape": "block",
+        "name": "object3"
+    },
+    {
+        "position": [
+            57.20560478639034,
+            -220.57193479572783,
+            19.97999999999999
+        ],
+        "size": null,
+        "rotation": 2.7329708354795437,
+        "color": null,
+        "shape": "block",
+        "name": "object2"
+    },
+    {
+        "position": [
+            92.49652805704899,
+            -193.21899479415663,
+            19.979999999999997
+        ],
+        "size": null,
+        "rotation": 1.7273295628773462,
+        "color": null,
+        "shape": "block",
+        "name": "object5"
+    },
+    {
+        "position": [
+            50.041567035785675,
+            -176.38712033092804,
+            19.980000000000008
+        ],
+        "size": null,
+        "rotation": 3.8009465259733406,
+        "color": null,
+        "shape": "block",
+        "name": "object6"
+    },
+    {
+        "position": [
+            50.0415670357857,
+            -73.08767813344929,
+            19.98000000000001
+        ],
+        "size": null,
+        "rotation": 5.623831434796038,
+        "color": null,
+        "shape": "block",
+        "name": "object7"
+    },
+    {
+        "position": [
+            69.0303832079208,
+            -182.18578198072672,
+            37.099999999999966
+        ],
+        "size": 3.0,
+        "rotation": 0.0,
+        "color": "orange",
+        "shape": "circle",
+        "name": "object8"
+    },
+    {
+        "position": [
+            69.0303832079208,
+            -67.28901648365049,
+            37.099999999999966
+        ],
+        "size": 3.0,
+        "rotation": 0.0,
+        "color": "orange",
+        "shape": "circle",
+        "name": "object9"
+    },
+    {
+        "position": [
+            77.68750740999006,
+            -90.68618298042824,
+            37.10749999999998
+        ],
+        "size": null,
+        "rotation": 0.4404862184095045,
+        "color": null,
+        "shape": "block",
+        "name": "object12"
+    },
+    {
+        "position": [
+            80.4689441475435,
+            -203.35201079557288,
+            37.10749999999998
+        ],
+        "size": null,
+        "rotation": 0.565155054192697,
+        "color": null,
+        "shape": "block",
+        "name": "object10"
+    },
+    {
+        "position": [
+            77.68750740999006,
+            -158.788615483949,
+            37.10749999999998
+        ],
+        "size": null,
+        "rotation": 5.842699088770083,
+        "color": null,
+        "shape": "block",
+        "name": "object11"
+    },
+    {
+        "position": [
+            80.46894414754348,
+            -46.12278766880432,
+            37.10749999999998
+        ],
+        "size": null,
+        "rotation": 5.718030252986889,
+        "color": null,
+        "shape": "block",
+        "name": "object13"
+    },
+    {
+        "position": [
+            39.89996584080639,
+            -184.43695686151378,
+            37.10749999999999
+        ],
+        "size": null,
+        "rotation": 4.774723398276281,
+        "color": null,
+        "shape": "block",
+        "name": "object14"
+    },
+    {
+        "position": [
+            39.89996584080638,
+            -65.03784160286344,
+            37.10749999999999
+        ],
+        "size": null,
+        "rotation": 4.650054562493098,
+        "color": null,
+        "shape": "block",
+        "name": "object15"
+    },
+    {
+        "position": [
+            62.70434049094643,
+            -171.45719306695588,
+            53.938949544477026
+        ],
+        "size": 3.0,
+        "rotation": 0.0,
+        "color": "cyan",
+        "shape": "circle",
+        "name": "object16"
+    },
+    {
+        "position": [
+            62.704340490946436,
+            -78.01760539742129,
+            53.938949544477026
+        ],
+        "size": 3.0,
+        "rotation": 0.0,
+        "color": "cyan",
+        "shape": "circle",
+        "name": "object17"
+    },
+    {
+        "position": [
+            92.49652805704899,
+            -82.75771048065252,
+            54.234999999999985
+        ],
+        "size": null,
+        "rotation": 4.5558557443022405,
+        "color": null,
+        "shape": "block",
+        "name": "object19"
+    },
+    {
+        "position": [
+            92.49652805704899,
+            -166.71708798372484,
+            54.234999999999985
+        ],
+        "size": null,
+        "rotation": 1.7273295628773462,
+        "color": null,
+        "shape": "block",
+        "name": "object18"
+    },
+    {
+        "position": [
+            50.04156703578567,
+            -149.88521352049625,
+            54.23499999999999
+        ],
+        "size": null,
+        "rotation": 3.8009465259733406,
+        "color": null,
+        "shape": "block",
+        "name": "object21"
+    },
+    {
+        "position": [
+            57.20560478639035,
+            -194.07002798529598,
+            54.23499999999999
+        ],
+        "size": null,
+        "rotation": 2.7329708354795437,
+        "color": null,
+        "shape": "block",
+        "name": "object20"
+    },
+    {
+        "position": [
+            57.205604786390346,
+            -55.404770479081385,
+            54.23499999999999
+        ],
+        "size": null,
+        "rotation": 3.5502144717000426,
+        "color": null,
+        "shape": "block",
+        "name": "object22"
+    },
+    {
+        "position": [
+            50.04156703578569,
+            -99.58958494388114,
+            54.235
+        ],
+        "size": null,
+        "rotation": 2.4822387812062456,
+        "color": null,
+        "shape": "block",
+        "name": "object23"
+    }
+]
