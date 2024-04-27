@@ -190,7 +190,7 @@ def extract_2d_features(color_path, show=False):
               ("yellow", np.array([0, 132, 166])),
               ("orange", np.array([0, 52, 172])),
             #   ("pink", np.array([241, 101, 122])),
-              ("turquoise", np.array([116, 127, 23])),
+              ("cyan", np.array([116, 127, 23])),
             #   ("blue", np.array([0, 105, 237])),
             #   ("dark blue", np.array([11, 13, 200])),
             #   ("purple", np.array([13, 12, 14]))
@@ -209,7 +209,7 @@ def extract_2d_features(color_path, show=False):
 
         # visualize the contours
         contour_img = img.copy()
-        # cv2.drawContours(contour_img, contours, -1, (0, 255, 0), 3)
+        cv2.drawContours(contour_img, contours, -1, (0, 255, 0), 3)
 
         for c in contours:
             rect = cv2.minAreaRect(c)
@@ -221,23 +221,20 @@ def extract_2d_features(color_path, show=False):
             plt.imshow(cv2.cvtColor(contour_img, cv2.COLOR_BGR2RGB))
             plt.title(f'Contour image for cluster {cluster_label} corresponding to {color_name}')
             plt.gca().invert_yaxis()
-            # plt.show()
+            plt.show()
 
         # define features
         for contour in contours:
             area = cv2.contourArea(contour)
             perimeter = cv2.arcLength(contour, closed=True)
-            if area < 5000 or area > 100000:
+            if area < 4000 or area > 100000:
                 continue
             if perimeter < 100:
                 continue
 
             roundness = 4 * np.pi * area / perimeter**2
-            # print('roundness:', roundness)
-            is_square = roundness < 0.7
-            is_block = area < 30000
-            if is_block:
-                print(area, perimeter)
+            is_square = roundness < 0.75
+            is_block = area < 20000
 
             # calculate position
             x, y, w, h = cv2.boundingRect(contour)
@@ -262,14 +259,13 @@ def extract_2d_features(color_path, show=False):
             # add to list of objects
             shape = "square" if is_square else "circle"
             shape = 'block' if is_block else shape
-            print(shape, color_name)
+            print(shape, color_name, area, perimeter, roundness)
 
             if color_name == 'block':
                 if shape == 'block':
-                    print("found a block")
                     objects.append(
                         {
-                            "color" : color_name,
+                            "color" : None,
                             "shape" : shape,
                             "size" : area,
                             "position": {"x": u, "y": v},
@@ -300,7 +296,7 @@ def annotate_features(img_path, annotated_path, objects):
     # define colors
     colors = {
         "orange": (0, 37, 149),
-        "turquoise": (123, 129, 17),
+        "cyan": (123, 129, 17),
         "purple": (16, 11, 14),
         "green": (55, 101, 0),
         "yellow": (0, 132, 166),
@@ -345,11 +341,11 @@ def annotate_features(img_path, annotated_path, objects):
     plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     plt.title("Annotated Image")
     # plt.gca().invert_yaxis()
-    # plt.show()
+    plt.show()
 
 if __name__ == '__main__':
-    color_img = capture_mac('4-26')
-    transform_img('color-img-4-26.png', show=False)
+    # color_img = capture_mac('4-26')
+    transform_img('color-img-4-26.png', show=True)
 
-    objects = extract_2d_features('color-img-4-26-corrected.png', show=False)
+    objects = extract_2d_features('color-img-4-26-corrected.png', show=True)
     annotate_features('color-img-4-26-corrected.png', 'color-img-4-26-corrected-annotated.png', objects)
