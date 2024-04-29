@@ -13,7 +13,7 @@ from cv2 import aruco
 
 from perception import *
 # from tower1movement import *
-from tower2movement import *
+from tower2movement import * 
 
 task_frame = cg.Frame.from_points([248.49, 192.44, 26.81], [-229.4, 192.41, 24], [247.98, 494.92, 26.35])
 speed = 900
@@ -50,14 +50,14 @@ if __name__ == '__main__':
     task_frame = cg.Frame.from_points([248.49, 192.44, 25], [248.49, 494.92, 25], [-229.4, 192.44, 25])
 
     # add perception stuff
-    date = '4-27-2'
+    date = '4-29-2'
     img = capture_mac(date)
     transform_img('color-img-' + date + '.png', show=False)
     ground_objects = extract_2d_features('color-img-' + date + '-corrected.png', show=False)
     annotate_features('color-img-' + date + '-corrected.png', 'color-img-' + date + '-corrected-annotated.png', ground_objects)
 
     # read in simpletower.json which is a list of dicts
-    with open("json/tower2.json") as json_file:
+    with open("json/tower.json") as json_file:
         tower_objects = json.load(json_file)
 
     for object in tower_objects:

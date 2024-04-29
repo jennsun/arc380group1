@@ -5,7 +5,7 @@ import math
 
 # task_frame = cg.Frame.from_points([248.49, 192.44, 26.81], [-229.4, 192.41, 24], [247.98, 494.92, 26.35])
 task_frame = cg.Frame.from_points([244.76, 189.79, 25], [-228.99, 203.04, 25], [249.35, 489.06, 25])
-speed = 700
+speed = 3000
 
 def transform_task_to_world_frame(ee_frame_t: cg.Frame, task_frame: cg.Frame) -> cg.Frame:
     """Transform a task frame to the world frame.

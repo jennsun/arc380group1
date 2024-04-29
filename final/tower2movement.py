@@ -5,7 +5,7 @@ import math
 
 # task_frame = cg.Frame.from_points([248.49, 192.44, 26.81], [-229.4, 192.41, 24], [247.98, 494.92, 26.35])
 task_frame = cg.Frame.from_points([244.76, 189.79, 25], [-228.99, 203.04, 25], [249.35, 489.06, 25])
-speed = 3000
+speed = 3500
 
 def transform_task_to_world_frame(ee_frame_t: cg.Frame, task_frame: cg.Frame) -> cg.Frame:
     """Transform a task frame to the world frame.
@@ -43,6 +43,7 @@ def move_to_t_point(abb_rrc, x: float, y: float, z: float):
     y = y / ppi * inch_to_mm
     x = x + 5
     y = y + 7
+    # z = z + 1
     # z = z / ppi * inch_to_mm
     print("moving to point: x", x, "y", y, "z", z)
     # Convert task frame position to world frame position
@@ -53,7 +54,7 @@ def move_to_t_point(abb_rrc, x: float, y: float, z: float):
     # Move the robot to the new position
     done = abb_rrc.send_and_wait(rrc.MoveToFrame(ee_frame_w, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
 
-def move_down_keep_rotation(abb_rrc, dz, orientation):
+def move_down_keep_rotation(abb_rrc, dz, orientation, shape):
     print("Rotation in degrees", orientation)
     angle = math.radians(orientation)
     print("Rotation in radians", angle)
@@ -63,6 +64,8 @@ def move_down_keep_rotation(abb_rrc, dz, orientation):
     rotated_frame = current_frame.transformed(rotation)
 
     point = rotated_frame.point
+    if shape == "square":
+        point[1] = point[1] - 3
     point[2] += dz
     rotated_frame.point = point
     # Move the robot to the rotated frame
@@ -163,11 +166,19 @@ def pick_object(abb_rrc, pick_location, shape, angle):
     # Move the robot downwards in the z-axis
     # move_keep_rotation(abb_rrc, x, y, z, angle)
     print("moving down")
+    # Tower 2
+    # if shape == "circle":
+    #     move_to_t_point(abb_rrc, x, y, z + 3)
+    # else:
+    #     # square and block
+    #     move_down_keep_rotation(abb_rrc, -20, angle - 20)
+
+    # Tower 1
     if shape == "circle":
-        move_to_t_point(abb_rrc, x, y, z)
+        move_to_t_point(abb_rrc, x, y, z + 3)
     else:
         # square and block
-        move_down_keep_rotation(abb_rrc, -20, angle - 20)
+        move_down_keep_rotation(abb_rrc, -22, angle - 20, shape)
 
     # turn gripper on
     print("turning vacuum on")
@@ -181,7 +192,7 @@ def pick_object(abb_rrc, pick_location, shape, angle):
     #     move_down_keep_rotation(abb_rrc, 20, angle - 20)
     
     # move gripper up reset angle 
-    move_to_t_point(abb_rrc, x, y, z - 20)
+    move_to_t_point(abb_rrc, x, y, z - 40)
 
 
     # rotate it back to 0 degrees/original orientation
@@ -207,6 +218,7 @@ def place_object(abb_rrc, place_position, shape, angle):
     z = - (place_position[2])
 
     # move item on top of largest object (base of pile)'s position
+    move_to_t_point_rhino(abb_rrc, x, y, z - 40)
     move_to_t_point_rhino(abb_rrc, x, y, z - 20)
     
     # rotate object by angle
@@ -229,17 +241,17 @@ def place_object(abb_rrc, place_position, shape, angle):
         move_to_t_point_rhino(abb_rrc, x, y, z + 5)
     else:
         # move_to_t_point_rhino(abb_rrc, x, y, z - 8)
-        move_down_keep_rotation(abb_rrc, -20, angle)
+        move_down_keep_rotation(abb_rrc, -20, angle, shape)
 
     # # turn gripper off
     abb_rrc.send_and_wait(rrc.SetDigital('DO00', 0))
     abb_rrc.send_and_wait(rrc.WaitTime(0.5))
 
-    if shape is not "circle":
+    if shape != "circle":
         # move gripper up keep angle
-        move_down_keep_rotation(abb_rrc, 18, angle)
+        move_down_keep_rotation(abb_rrc, 18, angle, shape)
      # move gripper up reset angle 
-    move_to_t_point_rhino(abb_rrc, x, y, z - 20)
+    move_to_t_point_rhino(abb_rrc, x, y, z - 30)
 
     # Reset gripper to 0 rotation
 
@@ -278,7 +290,10 @@ def convert_clockwise_to_counterclockwise_radians(angle):
     angle = angle % (2 * math.pi)
     
     # Convert to counterclockwise
-    counterclockwise_angle = (2 * math.pi - angle + math.pi  * (3/4)) % math.pi
+    # Tower 2
+    #     counterclockwise_angle = (2 * math.pi - angle + math.pi  * (3/4)) % math.pi
+    # Tower 1
+    counterclockwise_angle = (2 * math.pi - angle + (math.pi  * (-1/12))) % math.pi
 
     return counterclockwise_angle
 

@@ -234,8 +234,8 @@ def extract_2d_features(color_path, show=False):
                 continue
 
             roundness = 4 * np.pi * area / perimeter**2
-            # is_square = area > 33000# roundness < 0.75
-            is_square = False
+            is_square = area > 33000 and roundness < 0.81
+            # is_square = False for tower 2
             is_block = roundness < 0.75 and  area < 20000
 
             # calculate position
