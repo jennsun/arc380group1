@@ -147,32 +147,6 @@ def pick_object(abb_rrc, pick_location, shape, angle):
     move_to_t_point(abb_rrc, x, y, z - 20)
     angle = 90 - angle
 
-    # if shape == "block":
-    #     # rotate gripper to match block
-    #     current_frame = abb_rrc.send_and_wait(rrc.GetFrame())
-    #     # move_keep_rotation(abb_rrc, x, y, z, orientation)
-    #     # # create rotation transformation around Z axis at the current location
-    #     # # rotation is already in radians
-    #     print("Degrees is:", angle)
-    #     orientation = math.radians(angle)
-    #     print("Rotating it by radians:", orientation)
-    #     rotation = cg.Rotation.from_axis_and_angle([0, 0, 1], orientation, point=current_frame.point)
-    #     # # Apply the rotation to the current end effector frame
-    #     rotated_frame = current_frame.transformed(rotation)
-    #     # # Move the robot to the rotated frame
-    #     print("rotating to frame", rotated_frame)
-    #     abb_rrc.send_and_wait(rrc.MoveToFrame(rotated_frame, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
-
-    # Move the robot downwards in the z-axis
-    # move_keep_rotation(abb_rrc, x, y, z, angle)
-    print("moving down")
-    # Tower 2
-    # if shape == "circle":
-    #     move_to_t_point(abb_rrc, x, y, z + 3)
-    # else:
-    #     # square and block
-    #     move_down_keep_rotation(abb_rrc, -20, angle - 20)
-
     # Tower 1
     if shape == "circle":
         move_to_t_point(abb_rrc, x, y, z + 3)
@@ -184,31 +158,8 @@ def pick_object(abb_rrc, pick_location, shape, angle):
     print("turning vacuum on")
     abb_rrc.send_and_wait(rrc.SetDigital('DO00', 1))
     abb_rrc.send_and_wait(rrc.WaitTime(1.0))
-    # move object upwards
-
-    # move gripper up keep angle
-    # if shape == "square" or shape == "block":
-    #     print("SHAPE IS NOT A CIRCLE")
-    #     move_down_keep_rotation(abb_rrc, 20, angle - 20)
-    
     # move gripper up reset angle 
     move_to_t_point(abb_rrc, x, y, z - 40)
-
-
-    # rotate it back to 0 degrees/original orientation
-    # current_frame = abb_rrc.send_and_wait(rrc.GetFrame())
-    # # # rotation is already in radians
-    # orientation = -1 * math.radians(angle)
-    # rotation = cg.Rotation.from_axis_and_angle([0, 0, 1], orientation, point=current_frame.point)
-    # # # Apply the rotation to the current end effector frame
-    # rotated_frame = current_frame.transformed(rotation)
-    # # # Move the robot to the rotated frame
-    # print("rotating to frame", rotated_frame)
-    # abb_rrc.send_and_wait(rrc.MoveToFrame(rotated_frame, speed, rrc.Zone.FINE, rrc.Motion.LINEAR))
-
-    # Move the robot 50 mm upwards in the z-axis
-    # move_keep_rotation(abb_rrc, x, y, z - 20, orientation)
-
 
 def place_object(abb_rrc, place_position, shape, angle):
     print("PLACING OBJECT")
@@ -296,48 +247,3 @@ def convert_clockwise_to_counterclockwise_radians(angle):
     counterclockwise_angle = (2 * math.pi - angle + (math.pi  * (-1/12))) % math.pi
 
     return counterclockwise_angle
-
-
-# if __name__ == '__main__':
-
-#     # Create Ros Client
-#     ros = rrc.RosClient()
-#     ros.run()
-
-#     # Create ABB Client
-#     abb_rrc = rrc.AbbClient(ros, '/rob1-rw6')
-#     print('Connected to ROS.')
-
-#     # ================================== YOUR CODE HERE ==================================
-
-#     # Set tools
-#     abb_rrc.send(rrc.SetTool('vac_gripper'))
-#     print('set tool to vac_gripper.')
-
-
-#     # Set speed [mm/s]
-#     speed = 150 # 
-#     print("speed set to", speed)
-
-#     home = rrc.RobotJoints([0, 0, 0, 0, 90, 0])
-#     print("about to send, home is", home)
-#     done = abb_rrc.send_and_wait(rrc.MoveToJoints(home, [], speed, rrc.Zone.FINE))
-#     print("moved to home position.")
-
-#     # ====================================================================================
-
-#     # Define the task space points: top left, top right, bottom left
-
-#     # read in simpletower.json which is a list of dicts
-#     with open("simpletower_sorted.json") as json_file:
-#         tower_json = json.load(json_file)
-
-
-#     # ====================================================================================
-
-#     # End of Code
-#     print('Finished')
-
-#     # Close client
-#     ros.close()
-#     ros.terminate()
